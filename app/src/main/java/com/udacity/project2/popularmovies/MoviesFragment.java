@@ -87,12 +87,14 @@ public class MoviesFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_most_pop) {
-
+            FetchMoviesData moviesData = new FetchMoviesData();
+            moviesData.execute("popularity.desc");
             return true;
         }
         if (id == R.id.action_high_rated) {
-
-                return true;
+            FetchMoviesData moviesData = new FetchMoviesData();
+            moviesData.execute("vote_average.desc");
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -117,6 +119,21 @@ public class MoviesFragment extends Fragment {
 
         return view;
     }
+
+    private class FetchMoviesData extends AsyncTask<String,Void,Void>{
+
+        //1.Display progressbar in onPreExecute
+        //2.fetch data in doInBackground
+        @Override
+        protected Void doInBackground(String... params) {
+
+
+            return null;
+        }
+        //3.update Adapter and display data using doPost
+
+    }
+
 
 
 
