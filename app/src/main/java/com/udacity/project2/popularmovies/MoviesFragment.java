@@ -1,12 +1,10 @@
 package com.udacity.project2.popularmovies;
 
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +15,9 @@ import android.widget.GridView;
 
 import java.io.BufferedReader;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created by Dell on 12/15/2016.
@@ -90,12 +90,12 @@ public class MoviesFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_most_pop) {
             FetchMoviesData moviesData = new FetchMoviesData();
-            moviesData.execute("popularity.desc");
+            moviesData.execute(Url.SORT_POPULAR);
             return true;
         }
         if (id == R.id.action_high_rated) {
             FetchMoviesData moviesData = new FetchMoviesData();
-            moviesData.execute("vote_average.desc");
+            moviesData.execute(Url.SORT_BY_RATE);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -124,6 +124,8 @@ public class MoviesFragment extends Fragment {
 
     private class FetchMoviesData extends AsyncTask<String,Void,Void>{
 
+        private final String LOG_TAG = FetchMoviesData.class.getSimpleName();
+
         //1.Display progressbar in onPreExecute
         //2.fetch data in doInBackground
         @Override
@@ -139,10 +141,23 @@ public class MoviesFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
 
-            //2.1 Building URL for Movies Query
-            final String MOVIES_BASE_URL =
-                    "creating url";
-            final String QUERY_PARAM = "q";
+
+
+            try {
+
+                //2.1 Building Url for Movies Query
+                Uri builtUri=Uri.parse(Url.BASE_URL).buildUpon()
+                        .appendQueryParameter(Url.QUERY_PARAM,params[0])
+                        .appendQueryParameter(Url.APPID_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
 
 
 

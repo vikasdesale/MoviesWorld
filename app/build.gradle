@@ -16,6 +16,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        buildTypes.each {
+            it.buildConfigField 'String', 'THE_MOVIE_DB_API_KEY', '"6c94a83353fc80455c5c7ae706c48f3d"'
+        }
+
     }
 }
 
