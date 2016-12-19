@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import java.io.BufferedReader;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 /**
@@ -126,6 +128,23 @@ public class MoviesFragment extends Fragment {
         //2.fetch data in doInBackground
         @Override
         protected Void doInBackground(String... params) {
+
+            //MAKING HTTP REQUEST
+            if (params.length == 0) {
+                return null;
+            }
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr = null;
+
+            //2.1 Building URL for Movies Query
+            final String MOVIES_BASE_URL =
+                    "creating url";
+            final String QUERY_PARAM = "q";
+
+
 
 
             return null;
