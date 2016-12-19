@@ -3,6 +3,9 @@ package com.udacity.project2.popularmovies;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+/**
+ * Created by Dell on 12/15/2016.
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
