@@ -3,6 +3,7 @@ package com.udacity.project2.popularmovies;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import com.squareup.picasso.Picasso;
 
 import static android.R.attr.data;
 import static android.R.attr.imageButtonStyle;
@@ -21,21 +23,24 @@ import static android.R.attr.imageButtonStyle;
  */
 public class GridViewAdapter extends ArrayAdapter {
 
+    private static final String LOG_TAG ="GridView" ;
     private Context mContext;
     private int resource;
-    private int imageId[];
-    private String web[];
-    public GridViewAdapter(Context context, int resource, String[] web, int[] imageId) {
+    private ArrayList<Movies> parcel;
+    public GridViewAdapter(Context context, int resource,ArrayList<Movies> parcelable) {
         super(context, resource);
         this.resource=resource;
         this.mContext=context;
-        this.imageId=imageId;
-        this.web=web;
+        this.parcel=parcelable;
+
     }
+
+
+
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return web.length;
+        return parcel.size();
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -50,8 +55,21 @@ public class GridViewAdapter extends ArrayAdapter {
             grid = inflater.inflate(R.layout.moive_grid_item, null);
             TextView textView = (TextView) grid.findViewById(R.id.text);
             ImageView imageView = (ImageView)grid.findViewById(R.id.image);
-            textView.setText(web[position]);
-            imageView.setImageResource(imageId[position]);
+            Movies paracelable=parcel.get(position);
+            String posterPath = paracelable.getPoster();
+            String title=paracelable.getTitle();
+            if(posterPath != null||title!=null) {
+                String posterUrl = "http://image.tmdb.org/t/p/w500/" + posterPath;
+                Log.d(LOG_TAG, "poster url : " + posterUrl);
+                Picasso.with(mContext).load(posterUrl)
+                        .into(imageView);
+                textView.setText(""+title);
+            }
+            else {
+                 textView.setText("No Title");
+                imageView.setImageResource(R.drawable.v1);
+            }
+
         } else {
             grid = (View) convertView;
         }

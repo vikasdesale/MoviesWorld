@@ -3,6 +3,7 @@ package com.udacity.project2.popularmovies;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,49 +23,18 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+
+import static com.udacity.project2.popularmovies.R.id.container;
+import static com.udacity.project2.popularmovies.R.id.parentPanel;
 
 /**
  * Created by Dell on 12/15/2016.
  */
 public class MoviesFragment extends Fragment {
 
-    GridView grid;
-    String[] web = {
-            "Google",
-            "Github",
-            "Instagram",
-            "Facebook",
-            "Flickr",
-            "Pinterest",
-            "Quora",
-            "Twitter",
-            "Vimeo",
-            "WordPress",
-            "Youtube",
-            "Stumbleupon",
-            "SoundCloud",
-            "Reddit",
-            "Blogger"
-
-    } ;
-    int[] imageId = {
-            R.drawable.v1,
-            R.drawable.v2,
-            R.drawable.v1,
-            R.drawable.v2,
-            R.drawable.v1,
-            R.drawable.v2,
-            R.drawable.v1,
-            R.drawable.v2,
-            R.drawable.v1,
-            R.drawable.v2,
-            R.drawable.v1,
-            R.drawable.v2,
-            R.drawable.v1,
-            R.drawable.v2,
-            R.drawable.v1
-
-    };
+    GridView gridView;
+    private ArrayList<MyParcelable> pracelable;
     public MoviesFragment() {
     }
 
@@ -75,6 +45,8 @@ public class MoviesFragment extends Fragment {
         // Add this line in order for this fragment to handle menu events.
 
         //1.check network
+        FetchMoviesData moviesData = new FetchMoviesData();
+        moviesData.execute(Url.SORT_POPULAR);
         // 2.call asyncTask
         setHasOptionsMenu(true);
     }
@@ -111,10 +83,13 @@ public class MoviesFragment extends Fragment {
         //1. Create and set adapter for factoring code put in another java file
 
         View view=inflater.inflate(R.layout.fragment_main,container,false);
+        gridView = (GridView) view.findViewById(R.id.gView);
+        Log.v("Vieew","OUTPUT"+pracelable);
 
-        GridView gridView=(GridView)view.findViewById(R.id.gView);
-        GridViewAdapter gridAdapter = new GridViewAdapter(getActivity(), R.layout.moive_grid_item,web,imageId);
-        gridView.setAdapter(gridAdapter);
+        //if(!=null) {
+         //
+         //GridViewAdapter gridAdapter = new GridViewAdapter(getActivity(), R.layout.moive_grid_item,);
+         //gridView.setAdapter(gridAdapter);
 
         //2.create onclicklistener
 
@@ -126,14 +101,14 @@ public class MoviesFragment extends Fragment {
         return view;
     }
 
-    private class FetchMoviesData extends AsyncTask<String, Void, String[][]> {
+    private class FetchMoviesData extends AsyncTask<String, Void, ArrayList<Movies>> {
 
         private final String LOG_TAG = FetchMoviesData.class.getSimpleName();
 
         //1.Display progressbar in onPreExecute
         //2.fetch data in doInBackground
         @Override
-        protected String[][] doInBackground(String... params) {
+        protected ArrayList<Movies> doInBackground(String... params) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             // Will contain the raw JSON response as a string.
@@ -215,7 +190,29 @@ public class MoviesFragment extends Fragment {
 
             return null;
         }
-        //3.update Adapter and display data using doPost
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Movies> movies) {
+            super.onPostExecute(movies);
+            Log.v(LOG_TAG,"MY ............OUTPUT parse"+movies);
+
+
+                final GridViewAdapter gridAdapter = new GridViewAdapter(getActivity(), R.layout.moive_grid_item, movies);
+                gridView.setAdapter(gridAdapter);
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+//3.update Adapter and display data using doPost
 
     }
 
