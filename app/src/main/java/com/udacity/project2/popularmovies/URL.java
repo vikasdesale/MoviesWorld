@@ -11,4 +11,5 @@ public class Url {
     public static final String SORT_POPULAR="popularity.desc";
     public static final String SORT_BY_RATE="vote_average.desc";
     public static final String APPID_PARAM="api_key";
+    public static final String POSTER_URL ="http://image.tmdb.org/t/p/w185/";
 }

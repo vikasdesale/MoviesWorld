@@ -7,11 +7,11 @@ import android.os.Parcelable;
  * Created by Dell on 12/20/2016.
  */
 public class MyParcelable implements Parcelable {
-    String title;
-    String poster;
-    String overview;
-    String release_date;
-    String vote;
+    private String title;
+    private String poster;
+    private String overview;
+    private String release_date;
+    private String vote;
 
     public MyParcelable(String title, String poster, String overview, String release_date, String vote)
     {

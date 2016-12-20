@@ -12,4 +12,5 @@ public class Strings {
     public static final String MOVIE_OVERVIEW = "overview";
     public static final String MOVIE_RELEASE_DATE = "release_date";
     public static final String MOVIE_VOTES = "vote_average";
+
 }

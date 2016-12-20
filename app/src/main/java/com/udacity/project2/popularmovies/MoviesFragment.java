@@ -45,6 +45,7 @@ public class MoviesFragment extends Fragment {
         // Add this line in order for this fragment to handle menu events.
 
         //1.check network
+
         FetchMoviesData moviesData = new FetchMoviesData();
         moviesData.execute(Url.SORT_POPULAR);
         // 2.call asyncTask
@@ -194,7 +195,7 @@ public class MoviesFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            
+
         }
 
         @Override

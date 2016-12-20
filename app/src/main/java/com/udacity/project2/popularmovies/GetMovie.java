@@ -16,21 +16,22 @@ import java.util.List;
 public class GetMovie {
     private static final String LOG_TAG ="Vikas" ;
     private static ArrayList<MyParcelable> movieList;
-
     private static MyParcelable[] movies;
+
+    //Method to get Arraylist of movies and writing TO Parcelable
 
     public static ArrayList<Movies> getMovieDataFromJson(String movieJsonStr)throws JSONException {
 
         JSONObject movieJsonObject = new JSONObject(movieJsonStr);
         JSONArray movieArrayData = movieJsonObject.getJSONArray(Strings.MOVIE_LIST);
-        ArrayList<Movies> al=new ArrayList<Movies>();
+        ArrayList<Movies> al=null;
+        al=new ArrayList<Movies>();
+
         movies = new MyParcelable[movieArrayData.length()];
         for(int i = 0; i < movieArrayData.length(); i++) {
-            int l = 0;
 
             // Get the JSON object representing the movie
             JSONObject movieData = movieArrayData.getJSONObject(i);
-
             movies[i] = new MyParcelable(
                     movieData.getString(Strings.MOVIE_TITLE),
                     movieData.getString(Strings.MOVIE_POSTER),

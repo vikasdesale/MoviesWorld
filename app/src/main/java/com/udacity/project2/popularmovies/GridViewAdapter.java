@@ -15,8 +15,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import com.squareup.picasso.Picasso;
 
-import static android.R.attr.data;
-import static android.R.attr.imageButtonStyle;
 
 /**
  * Created by Dell on 12/19/2016.
@@ -27,6 +25,7 @@ public class GridViewAdapter extends ArrayAdapter {
     private Context mContext;
     private int resource;
     private ArrayList<Movies> parcel;
+
     public GridViewAdapter(Context context, int resource,ArrayList<Movies> parcelable) {
         super(context, resource);
         this.resource=resource;
@@ -34,8 +33,6 @@ public class GridViewAdapter extends ArrayAdapter {
         this.parcel=parcelable;
 
     }
-
-
 
     @Override
     public int getCount() {
@@ -55,19 +52,25 @@ public class GridViewAdapter extends ArrayAdapter {
             grid = inflater.inflate(R.layout.moive_grid_item, null);
             TextView textView = (TextView) grid.findViewById(R.id.text);
             ImageView imageView = (ImageView)grid.findViewById(R.id.image);
+
             Movies paracelable=parcel.get(position);
+
             String posterPath = paracelable.getPoster();
             String title=paracelable.getTitle();
+
             if(posterPath != null||title!=null) {
-                String posterUrl = "http://image.tmdb.org/t/p/w500/" + posterPath;
+
+                String posterUrl = Url.POSTER_URL + posterPath;
                 Log.d(LOG_TAG, "poster url : " + posterUrl);
+
                 Picasso.with(mContext).load(posterUrl)
                         .into(imageView);
+
                 textView.setText(""+title);
             }
             else {
                  textView.setText("No Title");
-                imageView.setImageResource(R.drawable.v1);
+                 imageView.setImageResource(R.drawable.v1);
             }
 
         } else {
