@@ -13,11 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * Created by Dell on 12/15/2016.
@@ -122,26 +126,22 @@ public class MoviesFragment extends Fragment {
         return view;
     }
 
-    private class FetchMoviesData extends AsyncTask<String,Void,Void>{
+    private class FetchMoviesData extends AsyncTask<String, Void, String[][]> {
 
         private final String LOG_TAG = FetchMoviesData.class.getSimpleName();
 
         //1.Display progressbar in onPreExecute
         //2.fetch data in doInBackground
         @Override
-        protected Void doInBackground(String... params) {
-
+        protected String[][] doInBackground(String... params) {
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr = null;
             //MAKING HTTP REQUEST
             if (params.length == 0) {
                 return null;
             }
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = null;
-
-
 
             try {
 
@@ -154,8 +154,59 @@ public class MoviesFragment extends Fragment {
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
+                //2.2 creating request and opening connection
+                urlConnection=(HttpURLConnection)url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+
+
+                //Reading inputstream into string
+                InputStream inputStream=urlConnection.getInputStream();
+                StringBuffer stringBuffer=new StringBuffer();
+                if(inputStream==null){
+                    return null;
+                }
+
+                reader=new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    stringBuffer.append(line + "\n");
+                }
+
+                if (stringBuffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+
+               movieJsonStr=stringBuffer.toString();
+               Log.v(LOG_TAG,"OUTPUT"+movieJsonStr);
+
 
             } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+            //String [][] with all data is returned to onPost Method
+            try {
+                return GetMovie.getMovieDataFromJson(movieJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
 
