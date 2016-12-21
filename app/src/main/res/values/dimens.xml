@@ -3,4 +3,14 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="pSize">125dp</dimen>
+    <dimen name="textSize">35dp</dimen>
+    <dimen name="textSizeError">20sp</dimen>
+    <dimen name="textSizeMovie">12sp</dimen>
+
+    <dimen name="viewTop">8dp</dimen>
+    <dimen name="viewHeight">1dp</dimen>
+    <dimen name="overPadding">5dp</dimen>
+    <dimen name="colDim">125dp</dimen>
+
+
 </resources>
