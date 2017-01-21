@@ -12,11 +12,7 @@
         android:layout_height="match_parent"
         android:background="@color/colorBack"
         android:orientation="vertical"
-<<<<<<< HEAD
         tools:context=".activities.DetailsActivity$DetailsFragment">
-=======
-        tools:context=".DetailsActivity$DetailsFragment">
->>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
 
         <RelativeLayout
             android:id="@+id/relative1"

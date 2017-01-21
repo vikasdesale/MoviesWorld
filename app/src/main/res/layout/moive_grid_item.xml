@@ -7,28 +7,17 @@
 
     <ImageView
         android:id="@+id/image"
-<<<<<<< HEAD
         android:adjustViewBounds="true"
-=======
->>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/text"
-<<<<<<< HEAD
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/overPadding"
         android:textColor="@color/textColor"
-=======
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/overPadding"
-        android:textColor="@color/textColor"
-        android:gravity="center"
->>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
         android:textSize="@dimen/textSizeMovie" />
 
 </LinearLayout>
