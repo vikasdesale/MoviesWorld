@@ -3,5 +3,9 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     tools:context=".activities.DetailsActivity"
+=======
+    tools:context=".DetailsActivity"
+>>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
     tools:ignore="MergeRootFrame" />

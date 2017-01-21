@@ -1,6 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+<<<<<<< HEAD
     tools:context="com.udacity.project2.popularmovies.activities.DetailsActivity">
+=======
+    tools:context="com.udacity.project2.popularmovies.DetailsActivity">
+>>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

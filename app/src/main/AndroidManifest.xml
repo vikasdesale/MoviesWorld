@@ -21,12 +21,21 @@
             </intent-filter>
         </activity>
         <activity
+<<<<<<< HEAD
             android:name=".activities.DetailsActivity"
             android:label="@string/title_activity_details"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.udacity.project2.popularmovies.activities.MainActivity" />
+=======
+            android:name=".DetailsActivity"
+            android:label="@string/title_activity_details"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.udacity.project2.popularmovies.MainActivity" />
+>>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
         </activity>
     </application>
 

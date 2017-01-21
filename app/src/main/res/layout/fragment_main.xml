@@ -4,9 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBack"
+<<<<<<< HEAD
     android:fitsSystemWindows="true"
     tools:context=".fragment.MoviesFragment">
 
+=======
+    tools:context=".MoviesFragment">
+>>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
 
     <LinearLayout
         android:id="@+id/error"
@@ -23,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/error_view_cloud" />
+<<<<<<< HEAD
 
         <TextView
             android:id="@+id/errortext"
@@ -34,6 +39,19 @@
             android:textSize="@dimen/textSizeError" />
     </LinearLayout>
 
+=======
+
+        <TextView
+            android:id="@+id/errortext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No Internet Connection"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/textSizeError" />
+    </LinearLayout>
+
+>>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
     <LinearLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -49,6 +67,7 @@
             android:layout_gravity="top"
             android:indeterminate="true" />
 
+<<<<<<< HEAD
 
 
             <android.support.v7.widget.RecyclerView
@@ -61,3 +80,22 @@
 
 
 </android.support.design.widget.CoordinatorLayout>
+=======
+        <GridView
+            android:id="@+id/gView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/overPadding"
+            android:clickable="true"
+            android:columnWidth="@dimen/colDim"
+            android:drawSelectorOnTop="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="@dimen/overPadding" />
+    </LinearLayout>
+
+
+</FrameLayout>
+>>>>>>> 6861a1b0f941e531c5cf1c04e028e2a3995516cd
