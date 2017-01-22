@@ -9,10 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import com.squareup.picasso.Picasso;
-import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.network.Url;
 import com.udacity.project2.popularmovies.anim.AnimationUtils;
+import com.udacity.project2.popularmovies.parcelable.Movie;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

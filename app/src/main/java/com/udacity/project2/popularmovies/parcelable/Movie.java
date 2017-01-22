@@ -27,6 +27,7 @@ public class Movie implements Parcelable {
     @SerializedName("vote_count") private Integer voteCount;
     @SerializedName("video") private Boolean video;
     @SerializedName("vote_average") private Double voteAverage;
+    @SerializedName("favourite") boolean favourite = false;
 
     public Movie(String posterPath, boolean adult, String overview, String releaseDate, List<Integer> genreIds, Integer id,
                  String originalTitle, String originalLanguage, String title, String backdropPath, Double popularity,
@@ -46,13 +47,23 @@ public class Movie implements Parcelable {
         this.video = video;
         this.voteAverage = voteAverage;
     }
-private Movie(Parcel in){
-    posterPath=in.readString();
-    title=in.readString();
-    overview=in.readString();
-    releaseDate=in.readString();
-    voteAverage=in.readDouble();
-}
+    private Movie(Parcel in){
+        this.posterPath=in.readString();
+        this.adult         = in.readByte() != 0;
+        this.overview  = in.readString();
+        this.releaseDate   = in.readString();
+        this.genreIds      =  new ArrayList<Integer>();
+        in.readList(this.genreIds, List.class.getClassLoader()); ;
+        this.id            = in.readInt();
+        this.originalTitle   = in.readString();
+        this.originalLanguage= in.readString();
+        this.title         = in.readString();
+        this.popularity      = in.readDouble();
+        this.voteCount    = in.readInt();
+        this.video    = in.readByte()!=0;
+        this.voteAverage=in.readDouble();
+        this.favourite = in.readByte() != 0;
+    }
     public String getPosterPath() {
         return posterPath;
     }
@@ -172,18 +183,27 @@ private Movie(Parcel in){
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(posterPath);
-        parcel.writeString(title);
-        parcel.writeString(overview);
-        parcel.writeString(releaseDate);
-        parcel.writeDouble(voteAverage);
+        parcel.writeString(this.posterPath);
+        parcel.writeByte(this.adult ? (byte) 1 : (byte) 0);
+        parcel.writeString(this.overview);
+        parcel.writeString(this.releaseDate);
+        parcel.writeList(this.genreIds);
+        parcel.writeLong(this.id);
+        parcel.writeString(this.originalTitle);
+        parcel.writeString(this.originalLanguage);
+        parcel.writeString(this.title);
+        parcel.writeDouble(this.popularity);
+        parcel.writeInt(this.voteCount);
+        parcel.writeByte(this.video ? (byte) 1 : (byte) 0);
+        parcel.writeDouble(this.voteAverage);
+        parcel.writeByte(favourite ? (byte) 1 : (byte) 0);
+
 
     }
 
     public final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
         @Override
         public Movie createFromParcel(Parcel parcel) {
-
             return new Movie(parcel);
         }
 

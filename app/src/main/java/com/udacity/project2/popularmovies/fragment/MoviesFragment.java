@@ -13,11 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 
+import com.udacity.project2.popularmovies.interfaces.ScrollViewExt;
+import com.udacity.project2.popularmovies.interfaces.ScrollViewListener;
+import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.BuildConfig;
 import com.udacity.project2.popularmovies.activities.DetailsActivity;
 import com.udacity.project2.popularmovies.network.Url;
-import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
 import com.udacity.project2.popularmovies.layout.GridLayoutManagerAutoFit;
@@ -27,11 +30,12 @@ import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
 import com.udacity.project2.popularmovies.retrofitusedinproject.MovieResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,7 +45,7 @@ import static android.content.ContentValues.TAG;
 /**
  * Created by Dell on 12/15/2016.
  */
-public class MoviesFragment extends Fragment implements RecyclerViewAdapter.ClickListener {
+public class MoviesFragment extends Fragment implements RecyclerViewAdapter.ClickListener, ScrollViewListener {
 
 
     private final String Movie_Parse = "v";
@@ -51,7 +55,8 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
     @BindView(R.id.card_recycler_view) RecyclerView recyclerView;
     private Unbinder unbinder;
     private ArrayList<Movie> movieParcelable;
-
+    int pages=1;
+    String type;
     public MoviesFragment() {
     }
 
@@ -75,6 +80,7 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         unbinder = ButterKnife.bind(this, view);
         recyclerView.setHasFixedSize(true);
+        ScrollViewExt scroll;
         GridLayoutManagerAutoFit layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
         recyclerView.setLayoutManager(layoutManager);
         if (movieParcelable != null) {
@@ -87,7 +93,8 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             contLayout.setVisibility(View.GONE);
         }
 
-
+        scroll = (ScrollViewExt)view.findViewById(R.id.scroll);
+        scroll.setScrollViewListener(this);
         return view;
     }
 
@@ -103,32 +110,7 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
                 progressBar.setVisibility(View.VISIBLE);
             }
 
-                ApiInterface apiService =
-                        ApiClient.getClient().create(ApiInterface.class);
-
-            Call<MovieResponse> call=null;
-            if (type.equals(Url.SORT_BY_RATE_BASE_URL)) {
-
-                call = apiService.getTopRatedMovies(BuildConfig.THE_MOVIE_DB_API_KEY);
-            }else{
-                call = apiService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_KEY);
-
-            }
-            call.enqueue(new Callback<MovieResponse>() {
-                @Override
-                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                    movieParcelable = (ArrayList<Movie>) response.body().getResults();
-                    //Log.d(TAG, "Number of movies received: " + movieParcelable.size()+""+movieParcelable.get(0));
-                    updateScreen(movieParcelable);
-                    progressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onFailure(Call<MovieResponse> call, Throwable t) {
-                    // Log error here since request failed
-                    Log.e(TAG, t.toString());
-                }
-            });
+                retro(type,pages);
 
 
             // METHOD 2.call asyncTask
@@ -145,6 +127,39 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             errorLayout.setVisibility(View.VISIBLE);
             contLayout.setVisibility(View.GONE);
         }
+    }
+
+    private void retro(String type,int page) {
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+        Map<String, String> data = new HashMap<>();
+        data.put("page",String.valueOf(page));
+        data.put("api_key",BuildConfig.THE_MOVIE_DB_API_KEY);
+
+        Call<MovieResponse> call=null;
+        if (type.equals(Url.SORT_BY_RATE_BASE_URL)) {
+
+            call = apiService.getTopRatedMovies(BuildConfig.THE_MOVIE_DB_API_KEY);
+        }else{
+            call = apiService.getPopularMovies(data);
+
+        }
+        call.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                movieParcelable = (ArrayList<Movie>) response.body().getResults();
+                pages=response.body().getTotalPages();
+                //Log.d(TAG, "Number of movies received: " + movieParcelable.size()+""+movieParcelable.get(0));
+                updateScreen(movieParcelable);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e(TAG, t.toString());
+            }
+        });
     }
 
     @Override
@@ -205,4 +220,17 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onScrollChanged(ScrollViewExt scrollView, int x, int y, int oldx, int oldy) {
+        // We take the last son in the scrollview
+        View view = (View) scrollView.getChildAt(scrollView.getChildCount() - 1);
+        int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+
+        // if diff is zero, then the bottom has been reached
+        if (diff == 0) {
+            // do stuff
+             pages=pages+1;
+            retro(Url.SORT_POPULAR_BASE_URL,pages);
+        }
+    }
 }
