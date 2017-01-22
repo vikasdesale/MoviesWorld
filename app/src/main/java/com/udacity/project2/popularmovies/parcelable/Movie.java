@@ -30,7 +30,7 @@ public class Movie implements Parcelable {
     @SerializedName("favourite") boolean favourite = false;
 
     public Movie(String posterPath, boolean adult, String overview, String releaseDate, List<Integer> genreIds, Integer id,
-                 String originalTitle, String originalLanguage, String title, String backdropPath, Double popularity,
+                 String originalLanguage, String title, String backdropPath, Double popularity,
                  Integer voteCount, Boolean video, Double voteAverage) {
         this.posterPath = posterPath;
         this.adult = adult;
@@ -38,7 +38,6 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
         this.genreIds = genreIds;
         this.id = id;
-        this.originalTitle = originalTitle;
         this.originalLanguage = originalLanguage;
         this.title = title;
         this.backdropPath = backdropPath;
@@ -55,7 +54,6 @@ public class Movie implements Parcelable {
         this.genreIds      =  new ArrayList<Integer>();
         in.readList(this.genreIds, List.class.getClassLoader()); ;
         this.id            = in.readInt();
-        this.originalTitle   = in.readString();
         this.originalLanguage= in.readString();
         this.title         = in.readString();
         this.popularity      = in.readDouble();
@@ -96,13 +94,6 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
     }
 
-    public List<Integer> getGenreIds() {
-        return genreIds;
-    }
-
-    public void setGenreIds(List<Integer> genreIds) {
-        this.genreIds = genreIds;
-    }
 
     public Integer getId() {
         return id;
@@ -110,14 +101,6 @@ public class Movie implements Parcelable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getOriginalTitle() {
-        return originalTitle;
-    }
-
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
     }
 
     public String getOriginalLanguage() {
@@ -189,7 +172,6 @@ public class Movie implements Parcelable {
         parcel.writeString(this.releaseDate);
         parcel.writeList(this.genreIds);
         parcel.writeLong(this.id);
-        parcel.writeString(this.originalTitle);
         parcel.writeString(this.originalLanguage);
         parcel.writeString(this.title);
         parcel.writeDouble(this.popularity);

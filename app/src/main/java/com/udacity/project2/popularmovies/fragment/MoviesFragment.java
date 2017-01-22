@@ -111,18 +111,6 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             }
 
                 retro(type,pages);
-
-
-            // METHOD 2.call asyncTask
-            /*FetchMoviesData moviesData=new FetchMoviesData(new MovieAsync() {
-                @Override
-                public void setup(final ArrayList<Movie> movies) {
-                  movieParcelable=movies;
-                    updateScreen(movies);
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
-            moviesData.execute(type);*/
         } else {
             errorLayout.setVisibility(View.VISIBLE);
             contLayout.setVisibility(View.GONE);
