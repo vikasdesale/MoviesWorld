@@ -1,6 +1,9 @@
 package com.udacity.project2.popularmovies.fragment;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,8 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
+import com.udacity.project2.popularmovies.database.MoviesDatabase;
 import com.udacity.project2.popularmovies.database.MoviesProvider;
 import com.udacity.project2.popularmovies.database.MoviesUtil;
+import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
 import com.udacity.project2.popularmovies.interfaces.ScrollViewExt;
 import com.udacity.project2.popularmovies.interfaces.ScrollViewListener;
 import com.udacity.project2.popularmovies.parcelable.Movie;
@@ -48,7 +53,7 @@ import static android.content.ContentValues.TAG;
 /**
  * Created by Dell on 12/15/2016.
  */
-public class MoviesFragment extends Fragment implements RecyclerViewAdapter.ClickListener, ScrollViewListener {
+public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,RecyclerViewAdapter.ClickListener, ScrollViewListener {
 
 
     private final String Movie_Parse = "v";
@@ -59,7 +64,9 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
     private Unbinder unbinder;
     private ArrayList<Movie> movieParcelable;
     int pages=1;
+    private RecyclerViewAdapter gridAdapter;
     String type;
+    private Cursor c;
     public MoviesFragment() {
     }
 
@@ -87,7 +94,7 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
         GridLayoutManagerAutoFit layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
         recyclerView.setLayoutManager(layoutManager);
         if (movieParcelable != null) {
-            updateScreen(movieParcelable);
+       //     updateScreen(movieParcelable);
             progressBar.setVisibility(View.GONE);
         }
         if (!NetworkUtil.isNetworkConnected(getActivity())) {
@@ -140,14 +147,18 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 movieParcelable = (ArrayList<Movie>) response.body().getResults();
                 pages=response.body().getTotalPages();
-                Cursor c = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                c = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
                         null, null, null, null);
                 Log.i("Vikaas............", "cursor count: " + c.getCount());
-               if (c == null || c.getCount() == 0){
+              // if (c == null || c.getCount() == 0){
                     MoviesUtil.insertData(getContext(),movieParcelable);
-                }
+                //}
+                 c = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                        null, null, null, null);
+                Log.i("Vikaas............", "cursor count: " + c.getCount());
+
                 Log.d(TAG, "Number of movies received: " + movieParcelable.size()+""+movieParcelable.get(0));
-                updateScreen(movieParcelable);
+                updateScreen(c);
                 progressBar.setVisibility(View.GONE);
             }
 
@@ -175,8 +186,8 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
         unbinder.unbind();
     }*/
 
-    public void updateScreen(final ArrayList<Movie> movies) {
-        final RecyclerViewAdapter gridAdapter = new RecyclerViewAdapter(getActivity(), R.layout.moive_grid_item, movies);
+    public void updateScreen(Cursor c) {
+        gridAdapter = new RecyclerViewAdapter(getActivity(),c);
         gridAdapter.setClickListener(this);
         recyclerView.setAdapter(gridAdapter);
 
@@ -184,15 +195,17 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
 
     @Override
     public void itemClicked(View view, int position) {
-        Movie mo = movieParcelable.get(position);
-        Intent intent = new Intent(getActivity(), DetailsActivity.class);
-        intent.putExtra("poster", mo.getPosterPath());
-        intent.putExtra("title", mo.getTitle());
-        intent.putExtra("overview", mo.getOverview());
-        intent.putExtra("date", mo.getReleaseDate());
-        intent.putExtra("vote", mo.getVoteAverage());
+        boolean cursor = c.moveToPosition(position);
+        if(cursor) {
+            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+            intent.putExtra("poster", c.getString(c.getColumnIndex(ColumnsMovies.POSTER_PATH)));
+            intent.putExtra("title", c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
+            intent.putExtra("overview", c.getString(c.getColumnIndex(ColumnsMovies.OVERVIEW)));
+            intent.putExtra("date", c.getString(c.getColumnIndex(ColumnsMovies.RELEASE_DATE)));
+            intent.putExtra("vote", c.getString(c.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
 
-        startActivity(intent);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -224,10 +237,31 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
         int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
 
         // if diff is zero, then the bottom has been reached
+        MovieResponse m=new MovieResponse();
         if (diff == 0) {
             // do stuff
+            if(pages<=m.getTotalPages())
              pages=pages+1;
             retro(Url.SORT_POPULAR_BASE_URL,pages);
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+          gridAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        gridAdapter.swapCursor(null);
     }
 }

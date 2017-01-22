@@ -26,19 +26,19 @@ public class MoviesUtil {
             ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                     MoviesProvider.MyMovies.CONTENT_URI);
             builder.withValue(ColumnsMovies.KEY,movie.getId());
-            builder.withValue(ColumnsMovies.POSTER_PATH, movie.getPosterPath());
+            builder.withValue(ColumnsMovies.POSTER_PATH,  movie.getPosterPath());
             builder.withValue(ColumnsMovies.TITLE, movie.getTitle());
             builder.withValue(ColumnsMovies.ADULT,movie.isAdult());
-            builder.withValue(ColumnsMovies.BACKDROP_PATH, movie.getBackdropPath());
-            builder.withValue(ColumnsMovies.ORIGIN_LANGUAGE, movie.getOriginalLanguage());
-            builder.withValue(ColumnsMovies.ORIGIN_TITLE,movie.getTitle());
-            builder.withValue(ColumnsMovies.OVERVIEW, movie.getOverview());
-            builder.withValue(ColumnsMovies.RELEASE_DATE, movie.getReleaseDate());
-            builder.withValue(ColumnsMovies.POPULARITY,movie.getPopularity());
-            builder.withValue(ColumnsMovies.VOTE_AVERAGE, movie.getVoteAverage());
-            builder.withValue(ColumnsMovies.VIDEO,movie.getVideo());
-            builder.withValue(ColumnsMovies.VOTE_COUNT, movie.getVoteCount());
-            builder.withValue(ColumnsMovies.FAVOURITE,movie.isFavourite());
+            builder.withValue(ColumnsMovies.BACKDROP_PATH,(movie.getBackdropPath() == null)   ? "" : movie.getBackdropPath());
+            builder.withValue(ColumnsMovies.ORIGIN_LANGUAGE, (movie.getOriginLanguage() == null) ? "" : movie.getOriginLanguage());
+            builder.withValue(ColumnsMovies.ORIGIN_TITLE, (movie.getOriginTitle() == null)    ? "" : movie.getOriginTitle());
+            builder.withValue(ColumnsMovies.OVERVIEW,(movie.getOverview() == null)       ? "" : movie.getOverview());
+            builder.withValue(ColumnsMovies.RELEASE_DATE, (movie.getReleaseDate() == null)    ? "" :  movie.getReleaseDate());
+            builder.withValue(ColumnsMovies.POPULARITY,(movie.getPopularity() == null)    ? 0.0 : movie.getPopularity());
+            builder.withValue(ColumnsMovies.VOTE_AVERAGE,(movie.getVoteAverage() == null)    ? 0.0 :  movie.getVoteAverage());
+            builder.withValue(ColumnsMovies.VIDEO,(movie.getVideo() == null)    ? false : movie.getVideo());
+            builder.withValue(ColumnsMovies.VOTE_COUNT, (movie.getVoteCount() == null)    ? 0 : movie.getVoteCount());
+            builder.withValue(ColumnsMovies.FAVOURITE,(movie.getReleaseDate() == null)    ? false: movie.isFavourite());
             batchOperations.add(builder.build());
         }
 
