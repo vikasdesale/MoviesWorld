@@ -1,6 +1,7 @@
 package com.udacity.project2.popularmovies.fragment;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
+import com.udacity.project2.popularmovies.database.MoviesProvider;
+import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.interfaces.ScrollViewExt;
 import com.udacity.project2.popularmovies.interfaces.ScrollViewListener;
 import com.udacity.project2.popularmovies.parcelable.Movie;
@@ -137,7 +140,13 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 movieParcelable = (ArrayList<Movie>) response.body().getResults();
                 pages=response.body().getTotalPages();
-                //Log.d(TAG, "Number of movies received: " + movieParcelable.size()+""+movieParcelable.get(0));
+                Cursor c = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                        null, null, null, null);
+                Log.i("Vikaas............", "cursor count: " + c.getCount());
+               if (c == null || c.getCount() == 0){
+                    MoviesUtil.insertData(getContext(),movieParcelable);
+                }
+                Log.d(TAG, "Number of movies received: " + movieParcelable.size()+""+movieParcelable.get(0));
                 updateScreen(movieParcelable);
                 progressBar.setVisibility(View.GONE);
             }

@@ -16,7 +16,7 @@ import net.simonvt.schematic.annotation.TableEndpoint;
 @ContentProvider(authority = MoviesProvider.AUTHORITY, database = MoviesDatabase.class)
 public class MoviesProvider {
 
-    public static final String AUTHORITY = "com.udacity.project2.popularmovie.database.MoviesProvider";
+    public static final String AUTHORITY = "com.udacity.project2.popularmovie";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     interface Path {

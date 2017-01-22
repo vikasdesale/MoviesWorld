@@ -12,7 +12,7 @@ import java.util.List;
  * Created by Dell on 12/21/2016.
  */
 
-public class Movie implements Parcelable {
+public class  Movie implements Parcelable {
     @SerializedName("poster_path") private String posterPath;
     @SerializedName("adult") private boolean adult;
     @SerializedName("overview") private String overview;
@@ -195,4 +195,14 @@ public class Movie implements Parcelable {
         }
 
     };
+
+    public boolean isFavourite() {
+        return favourite;
+    }
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
+    }
+
+    public class Builder {
+    }
 }

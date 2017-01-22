@@ -23,6 +23,7 @@ public interface ColumnsMovies {
     @DataType(DataType.Type.TEXT) @NotNull    String RELEASE_DATE = "releaseDate";
     @DataType(DataType.Type.REAL ) @NotNull   String POPULARITY = "popularity";
     @DataType(DataType.Type.INTEGER ) @NotNull String VOTE_AVERAGE = "voteAverage";
+    @DataType(DataType.Type.INTEGER ) @NotNull String VIDEO = "video";
     @DataType(DataType.Type.INTEGER ) @NotNull String VOTE_COUNT = "voteCount";
     @DataType(DataType.Type.INTEGER )          String FAVOURITE = "favourite";
 
