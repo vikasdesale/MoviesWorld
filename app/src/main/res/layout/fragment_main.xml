@@ -45,6 +45,7 @@
             android:id="@+id/progressbar"
             style="@style/GNowProgressBar"
             android:layout_width="match_parent"
+            android:layout_weight="0.1"
             android:layout_height="@dimen/overPadding"
             android:layout_gravity="top"
             android:indeterminate="true" />
@@ -54,6 +55,7 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="0.8"
 
             android:id="@+id/scroll">
 
@@ -62,7 +64,17 @@
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
 </com.udacity.project2.popularmovies.interfaces.ScrollViewExt>
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:id="@+id/progressbar2"
+            style="@style/GNowProgressBar"
+            android:layout_weight="0.1"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/overPadding"
+            android:layout_gravity="top"
+            android:indeterminate="true" />
     </LinearLayout>
 
 

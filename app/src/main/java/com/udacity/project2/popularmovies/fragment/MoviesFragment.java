@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.udacity.project2.popularmovies.database.MoviesDatabase;
 import com.udacity.project2.popularmovies.database.MoviesProvider;
@@ -58,12 +59,16 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     private final String Movie_Parse = "v";
     @BindView(R.id.progressbar) ProgressBar progressBar;
+    @BindView(R.id.progressbar2) ProgressBar progressBar2;
     @BindView(R.id.error) LinearLayout errorLayout;
     @BindView(R.id.content) LinearLayout contLayout;
     @BindView(R.id.card_recycler_view) RecyclerView recyclerView;
     private Unbinder unbinder;
     private ArrayList<Movie> movieParcelable;
     int pages=1;
+    int flag=0;
+    int flag2=0;
+    int TotalPages;
     private RecyclerViewAdapter gridAdapter;
     String type;
     private Cursor c;
@@ -96,9 +101,11 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         if (movieParcelable != null) {
        //     updateScreen(movieParcelable);
             progressBar.setVisibility(View.GONE);
+            progressBar2.setVisibility(View.VISIBLE);
         }
         if (!NetworkUtil.isNetworkConnected(getActivity())) {
             progressBar.setVisibility(View.GONE);
+            progressBar2.setVisibility(View.VISIBLE);
             errorLayout.setVisibility(View.VISIBLE);
             contLayout.setVisibility(View.GONE);
         }
@@ -114,9 +121,10 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
             //METHOD 1 Retrofit:-
 
             //This is because internet connection goes down between activities
-            if(errorLayout!=null||progressBar!=null||contLayout!=null) {
+            if(errorLayout!=null||progressBar!=null||contLayout!=null||progressBar2!=null) {
                 errorLayout.setVisibility(View.GONE);
                 contLayout.setVisibility(View.VISIBLE);
+                progressBar2.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
             }
 
@@ -146,20 +154,15 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 movieParcelable = (ArrayList<Movie>) response.body().getResults();
-                pages=response.body().getTotalPages();
+                TotalPages =  response.body().getTotalPages();
+
+                MoviesUtil.insertData(getContext(), movieParcelable);
                 c = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
                         null, null, null, null);
-                Log.i("Vikaas............", "cursor count: " + c.getCount());
-              // if (c == null || c.getCount() == 0){
-                    MoviesUtil.insertData(getContext(),movieParcelable);
-                //}
-                 c = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                        null, null, null, null);
-                Log.i("Vikaas............", "cursor count: " + c.getCount());
 
-                Log.d(TAG, "Number of movies received: " + movieParcelable.size()+""+movieParcelable.get(0));
                 updateScreen(c);
                 progressBar.setVisibility(View.GONE);
+                progressBar2.setVisibility(View.GONE);
             }
 
             @Override
@@ -190,7 +193,6 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         gridAdapter = new RecyclerViewAdapter(getActivity(),c);
         gridAdapter.setClickListener(this);
         recyclerView.setAdapter(gridAdapter);
-
     }
 
     @Override
@@ -237,12 +239,18 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
 
         // if diff is zero, then the bottom has been reached
-        MovieResponse m=new MovieResponse();
         if (diff == 0) {
+
             // do stuff
-            if(pages<=m.getTotalPages())
+             if(pages<=TotalPages)
              pages=pages+1;
+            progressBar2.setVisibility(View.VISIBLE);
+                Log.d("PAges..........."+pages,"vikas");
+            Log.d("PAges..........."+TotalPages,"vikas");
+
             retro(Url.SORT_POPULAR_BASE_URL,pages);
+        }else{
+            Toast.makeText(getContext(),"Movies Not Available",Toast.LENGTH_LONG);
         }
     }
 

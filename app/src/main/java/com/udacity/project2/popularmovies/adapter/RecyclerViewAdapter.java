@@ -120,7 +120,7 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
             viewHolder.textView.setText("No Title");
             viewHolder.imageView.setImageResource(R.drawable.v1);
         }
-        if (viewType > mPreviousPosition) {
+       if (viewType > mPreviousPosition) {
             AnimationUtils.animateSunblind(viewHolder, true);
 
         } else {
@@ -130,11 +130,6 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
         mPreviousPosition = viewType;
     }
 
-
-    @Override
-    public int getItemCount() {
-        return getCursor().getCount();
-    }
 
 
 
