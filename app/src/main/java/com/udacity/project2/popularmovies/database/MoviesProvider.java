@@ -19,19 +19,20 @@ public class MoviesProvider {
     public static final String AUTHORITY = "com.udacity.project2.popularmovie";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    interface Path {
-        String MY_MOVIES = "myMovies";
-    }
-
-    private static Uri buildUri(String ... paths){
+    private static Uri buildUri(String... paths) {
         Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
-        for (String path : paths){
+        for (String path : paths) {
             builder.appendPath(path);
         }
         return builder.build();
     }
 
-    @TableEndpoint(table = MoviesDatabase.MY_MOVIES) public static class MyMovies{
+    interface Path {
+        String MY_MOVIES = "myMovies";
+    }
+
+    @TableEndpoint(table = MoviesDatabase.MY_MOVIES)
+    public static class MyMovies {
         @ContentUri(
                 path = Path.MY_MOVIES,
                 type = "vnd.android.cursor.dir/favouriteMovies",
@@ -44,7 +45,7 @@ public class MoviesProvider {
                 type = "vnd.android.cursor.item/favouriteMovie",
                 whereColumn = ColumnsMovies.KEY,
                 pathSegment = 1)
-        public static Uri withId(long id){
+        public static Uri withId(long id) {
             return buildUri(Path.MY_MOVIES, String.valueOf(id));
         }
     }

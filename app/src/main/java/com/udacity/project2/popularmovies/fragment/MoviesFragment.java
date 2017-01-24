@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
@@ -23,11 +22,7 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.Toast;
-
-import com.daimajia.easing.linear.Linear;
-import com.udacity.project2.popularmovies.database.MoviesDatabase;
 import com.udacity.project2.popularmovies.database.MoviesProvider;
 import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
@@ -62,27 +57,30 @@ import static com.udacity.project2.popularmovies.database.MoviesUtil.getCursor;
 /**
  * Created by Dell on 12/15/2016.
  */
-public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,RecyclerViewAdapter.ClickListener, ScrollViewListener{
+public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>, RecyclerViewAdapter.ClickListener, ScrollViewListener {
 
 
+    private static final int MOVIE_LOADER = 0;
+    private static final String SELECTED_KEY = "selected_position";
     private final String Movie_Parse = "v";
-    @BindView(R.id.progressbar) ProgressBar progressBar;
-    @BindView(R.id.progressbar2) ProgressBar progressBar2;
-    @BindView(R.id.error) LinearLayout errorLayout;
-    @BindView(R.id.content) LinearLayout contLayout;
-    @BindView(R.id.card_recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.progressbar)
+    ProgressBar progressBar;
+    @BindView(R.id.progressbar2)
+    ProgressBar progressBar2;
+    @BindView(R.id.error)
+    LinearLayout errorLayout;
+    @BindView(R.id.content)
+    LinearLayout contLayout;
+    @BindView(R.id.card_recycler_view)
+    RecyclerView recyclerView;
+    int pages = 1;
+    int TotalPages;
     private Unbinder unbinder;
     private ArrayList<Movie> movieParcelable;
-    int pages=1;
-    int flag=0;
-    int flag2=0;
-    int TotalPages;
     private RecyclerViewAdapter gridAdapter;
-    String type;
     private Cursor c;
-    private static final int MOVIE_LOADER = 0;
-    private int mPosition =GridView.INVALID_POSITION;
-    private static final String SELECTED_KEY = "selected_position";
+    private int mPosition = GridView.INVALID_POSITION;
+
     public MoviesFragment() {
     }
 
@@ -90,9 +88,12 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if(progressBar!=null){   progressBar.setVisibility(View.GONE);}
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
 
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,8 +103,8 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         ScrollViewExt scroll;
         GridLayoutManagerAutoFit layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
         recyclerView.setLayoutManager(layoutManager);
-        c=getCursor(getActivity());
-        if (c!=null) {
+        c = getCursor(getActivity());
+        if (c != null) {
             progressBar.setVisibility(View.VISIBLE);
             updateScreen(getCursor(getActivity()));
 
@@ -116,11 +117,12 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             contLayout.setVisibility(View.GONE);
         }
 
-        scroll = (ScrollViewExt)view.findViewById(R.id.scroll);
+        scroll = (ScrollViewExt) view.findViewById(R.id.scroll);
         scroll.setScrollViewListener(this);
 
         return view;
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // When tablets rotate, the currently selected list item needs to be saved.
@@ -131,38 +133,39 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         }
         super.onSaveInstanceState(outState);
     }
+
     public void settings(String type) {
 
         if (NetworkUtil.isNetworkConnected(getActivity())) {
             //METHOD 1 Retrofit:-
 
             //This is because internet connection goes down between activities
-            if(errorLayout!=null||progressBar!=null||contLayout!=null||progressBar2!=null) {
+            if (errorLayout != null || progressBar != null || contLayout != null || progressBar2 != null) {
                 errorLayout.setVisibility(View.GONE);
                 contLayout.setVisibility(View.VISIBLE);
                 progressBar2.setVisibility(View.VISIBLE);
                 //progressBar.setVisibility(View.VISIBLE);
             }
 
-                retro(type,pages);
+            retro(type, pages);
         } else {
             errorLayout.setVisibility(View.VISIBLE);
             contLayout.setVisibility(View.GONE);
         }
     }
 
-    private void retro(String type,int page) {
+    private void retro(String type, int page) {
         ApiInterface apiService =
                 ApiClient.getClient().create(ApiInterface.class);
         Map<String, String> data = new HashMap<>();
-        data.put("page",String.valueOf(page));
-        data.put("api_key",BuildConfig.THE_MOVIE_DB_API_KEY);
+        data.put("page", String.valueOf(page));
+        data.put("api_key", BuildConfig.THE_MOVIE_DB_API_KEY);
 
-        Call<MovieResponse> call=null;
+        Call<MovieResponse> call = null;
         if (type.equals(Url.SORT_BY_RATE_BASE_URL)) {
 
             call = apiService.getTopRatedMovies(BuildConfig.THE_MOVIE_DB_API_KEY);
-        }else{
+        } else {
             call = apiService.getPopularMovies(data);
 
         }
@@ -170,11 +173,11 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 movieParcelable = (ArrayList<Movie>) response.body().getResults();
-                TotalPages =  response.body().getTotalPages();
+                TotalPages = response.body().getTotalPages();
 
                 MoviesUtil.insertData(getContext(), movieParcelable);
 
-                c=getCursor(getActivity());
+                c = getCursor(getActivity());
                 updateScreen(c);
                 progressBar.setVisibility(View.GONE);
                 progressBar2.setVisibility(View.GONE);
@@ -189,8 +192,6 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     }
 
 
-
-
     // When binding a fragment in onCreateView, set the views to null in onDestroyView.
     // ButterKnife returns an Unbinder on the initial binding that has an unbind method to do this automatically.
     @Override
@@ -201,10 +202,12 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     }
 
     public void updateScreen(Cursor c) {
-        gridAdapter = new RecyclerViewAdapter(getActivity(),c);
+        gridAdapter = new RecyclerViewAdapter(getActivity(), c);
         gridAdapter.setClickListener(this);
         recyclerView.setAdapter(gridAdapter);
-        if(progressBar!=null){   progressBar.setVisibility(View.GONE);}
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
 
     }
 
@@ -223,13 +226,13 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     @Override
     public void itemClicked(View view, int position) {
         boolean cursor = c.moveToPosition(position);
-        if(cursor) {
+        if (cursor) {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             intent.putExtra("poster", c.getString(c.getColumnIndex(ColumnsMovies.POSTER_PATH)));
             intent.putExtra("title", c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
             intent.putExtra("overview", c.getString(c.getColumnIndex(ColumnsMovies.OVERVIEW)));
             intent.putExtra("date", c.getString(c.getColumnIndex(ColumnsMovies.RELEASE_DATE)));
-            intent.putExtra("vote", c.getString(c.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
+            intent.putExtra("vote", c.getDouble(c.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
 
             startActivity(intent);
         }
@@ -270,35 +273,36 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                 //METHOD 1 Retrofit:-
 
                 //This is because internet connection goes down between activities
-                if(errorLayout!=null||progressBar!=null||contLayout!=null||progressBar2!=null) {
+                if (errorLayout != null || progressBar != null || contLayout != null || progressBar2 != null) {
                     errorLayout.setVisibility(View.GONE);
                     contLayout.setVisibility(View.VISIBLE);
                     // do stuff
-                    if(pages<=TotalPages)
-                        pages=pages+1;
-                    if(progressBar!=null){   progressBar.setVisibility(View.GONE);}
+                    if (pages <= TotalPages)
+                        pages = pages + 1;
+                    if (progressBar != null) {
+                        progressBar.setVisibility(View.GONE);
+                    }
                     progressBar2.setVisibility(View.VISIBLE);
-                    Log.d("PAges..........."+pages,"vikas");
-                    Log.d("PAges..........."+TotalPages,"vikas");
+                      //                    Log.d("POPULAR MOVIES","Pages..........." + pages);
+                    Log.d("POPULAR MOVIES","Total Pages..........." + TotalPages);
 
-                    retro(Url.SORT_POPULAR_BASE_URL,pages);
-                }else{
-                    Toast.makeText(getContext(),"Movies Not Available",Toast.LENGTH_LONG);
+                    retro(Url.SORT_POPULAR_BASE_URL, pages);
+                } else {
+                    Toast.makeText(getContext(), "More Movies Not Available", Toast.LENGTH_SHORT);
                 }
-                    //progressBar.setVisibility(View.VISIBLE);
-                }
-            else {
+                //progressBar.setVisibility(View.VISIBLE);
+            } else {
                 errorLayout.setVisibility(View.VISIBLE);
                 contLayout.setVisibility(View.GONE);
             }
 
-            }
+        }
 
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(MOVIE_LOADER, null,this);
+        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -313,7 +317,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-          gridAdapter.swapCursor(cursor);
+        gridAdapter.swapCursor(cursor);
         if (mPosition != GridView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.

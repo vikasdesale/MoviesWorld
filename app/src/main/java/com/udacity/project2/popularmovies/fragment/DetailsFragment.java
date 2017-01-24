@@ -22,11 +22,16 @@ import butterknife.Unbinder;
  */
 
 public class DetailsFragment extends Fragment {
-    @BindView(R.id.title) TextView title;
-    @BindView(R.id.rdate) TextView date;
-    @BindView(R.id.rate) TextView rate;
-    @BindView(R.id.overview) TextView overview;
-    @BindView(R.id.imageView) ImageView img;
+    @BindView(R.id.title)
+    TextView title;
+    @BindView(R.id.rdate)
+    TextView date;
+    @BindView(R.id.rate)
+    TextView rate;
+    @BindView(R.id.overview)
+    TextView overview;
+    @BindView(R.id.imageView)
+    ImageView img;
     private Unbinder unbinder;
 
     public DetailsFragment() {

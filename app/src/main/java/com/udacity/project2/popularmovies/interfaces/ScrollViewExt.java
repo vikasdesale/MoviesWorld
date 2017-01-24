@@ -9,6 +9,7 @@ import android.widget.ScrollView;
  */
 public class ScrollViewExt extends ScrollView {
     private ScrollViewListener scrollViewListener = null;
+
     public ScrollViewExt(Context context) {
         super(context);
     }
