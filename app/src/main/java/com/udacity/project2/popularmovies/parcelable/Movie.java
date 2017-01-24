@@ -30,8 +30,8 @@ public class  Movie implements Parcelable {
     @SerializedName("favourite") boolean favourite = false;
 
     public Movie(String posterPath, boolean adult, String overview, String releaseDate, List<Integer> genreIds, Integer id,
-                 String originLanguage,String originTitle, String title, String backdropPath, Double popularity,
-                 Integer voteCount, Boolean video, Double voteAverage) {
+                 String originLanguage, String originTitle, String title, String backdropPath, Double popularity,
+                 Integer voteCount, Boolean video, Double voteAverage, boolean b) {
         this.posterPath = posterPath;
         this.adult = adult;
         this.overview = overview;
@@ -46,6 +46,7 @@ public class  Movie implements Parcelable {
         this.voteCount = voteCount;
         this.video = video;
         this.voteAverage = voteAverage;
+        this.favourite=b;
     }
     private Movie(Parcel in){
         this.posterPath=in.readString();

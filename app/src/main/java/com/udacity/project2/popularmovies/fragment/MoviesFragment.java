@@ -1,12 +1,16 @@
 package com.udacity.project2.popularmovies.fragment;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
+
 import android.content.Intent;
-import android.content.Loader;
+
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +19,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.daimajia.easing.linear.Linear;
 import com.udacity.project2.popularmovies.database.MoviesDatabase;
 import com.udacity.project2.popularmovies.database.MoviesProvider;
 import com.udacity.project2.popularmovies.database.MoviesUtil;
@@ -50,11 +57,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
+import static com.udacity.project2.popularmovies.database.MoviesUtil.getCursor;
 
 /**
  * Created by Dell on 12/15/2016.
  */
-public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,RecyclerViewAdapter.ClickListener, ScrollViewListener {
+public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,RecyclerViewAdapter.ClickListener, ScrollViewListener{
 
 
     private final String Movie_Parse = "v";
@@ -72,21 +80,17 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private RecyclerViewAdapter gridAdapter;
     String type;
     private Cursor c;
+    private static final int MOVIE_LOADER = 0;
+    private int mPosition =ListView.INVALID_POSITION;
+    private static final String SELECTED_KEY = "selected_position";
     public MoviesFragment() {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (NetworkUtil.isNetworkConnected(getActivity())) {
-            if (savedInstanceState == null || !savedInstanceState.containsKey(Movie_Parse) ||
-                    savedInstanceState.getParcelableArrayList(Movie_Parse) == null) {
-                settings(Url.SORT_POPULAR_BASE_URL);
-            } else {
-                movieParcelable = savedInstanceState.getParcelableArrayList(Movie_Parse);
-            }
-        }
+        if(progressBar!=null){   progressBar.setVisibility(View.GONE);}
 
     }
     @Override
@@ -98,23 +102,35 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         ScrollViewExt scroll;
         GridLayoutManagerAutoFit layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
         recyclerView.setLayoutManager(layoutManager);
-        if (movieParcelable != null) {
-       //     updateScreen(movieParcelable);
-            progressBar.setVisibility(View.GONE);
-            progressBar2.setVisibility(View.VISIBLE);
+        c=getCursor(getActivity());
+        if (c!=null) {
+            progressBar.setVisibility(View.VISIBLE);
+            updateScreen(getCursor(getActivity()));
+
+            progressBar2.setVisibility(View.GONE);
         }
         if (!NetworkUtil.isNetworkConnected(getActivity())) {
             progressBar.setVisibility(View.GONE);
-            progressBar2.setVisibility(View.VISIBLE);
+            progressBar2.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
             contLayout.setVisibility(View.GONE);
         }
 
         scroll = (ScrollViewExt)view.findViewById(R.id.scroll);
         scroll.setScrollViewListener(this);
+
         return view;
     }
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // When tablets rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
+        // so check for that before storing.
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
+        super.onSaveInstanceState(outState);
+    }
     public void settings(String type) {
 
         if (NetworkUtil.isNetworkConnected(getActivity())) {
@@ -125,7 +141,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
                 errorLayout.setVisibility(View.GONE);
                 contLayout.setVisibility(View.VISIBLE);
                 progressBar2.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
+                //progressBar.setVisibility(View.VISIBLE);
             }
 
                 retro(type,pages);
@@ -157,9 +173,8 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
                 TotalPages =  response.body().getTotalPages();
 
                 MoviesUtil.insertData(getContext(), movieParcelable);
-                c = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                        null, null, null, null);
 
+                c=getCursor(getActivity());
                 updateScreen(c);
                 progressBar.setVisibility(View.GONE);
                 progressBar2.setVisibility(View.GONE);
@@ -173,26 +188,36 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         });
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("v", movieParcelable);
-        super.onSaveInstanceState(outState);
-    }
 
 
 
     // When binding a fragment in onCreateView, set the views to null in onDestroyView.
     // ButterKnife returns an Unbinder on the initial binding that has an unbind method to do this automatically.
-    /*@Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-    }*/
+
+    }
 
     public void updateScreen(Cursor c) {
         gridAdapter = new RecyclerViewAdapter(getActivity(),c);
         gridAdapter.setClickListener(this);
         recyclerView.setAdapter(gridAdapter);
+        if(progressBar!=null){   progressBar.setVisibility(View.GONE);}
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        c.close();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        c.close();
     }
 
     @Override
@@ -241,17 +266,40 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         // if diff is zero, then the bottom has been reached
         if (diff == 0) {
 
-            // do stuff
-             if(pages<=TotalPages)
-             pages=pages+1;
-            progressBar2.setVisibility(View.VISIBLE);
-                Log.d("PAges..........."+pages,"vikas");
-            Log.d("PAges..........."+TotalPages,"vikas");
+            if (NetworkUtil.isNetworkConnected(getActivity())) {
+                //METHOD 1 Retrofit:-
 
-            retro(Url.SORT_POPULAR_BASE_URL,pages);
-        }else{
-            Toast.makeText(getContext(),"Movies Not Available",Toast.LENGTH_LONG);
-        }
+                //This is because internet connection goes down between activities
+                if(errorLayout!=null||progressBar!=null||contLayout!=null||progressBar2!=null) {
+                    errorLayout.setVisibility(View.GONE);
+                    contLayout.setVisibility(View.VISIBLE);
+                    // do stuff
+                    if(pages<=TotalPages)
+                        pages=pages+1;
+                    if(progressBar!=null){   progressBar.setVisibility(View.GONE);}
+                    progressBar2.setVisibility(View.VISIBLE);
+                    Log.d("PAges..........."+pages,"vikas");
+                    Log.d("PAges..........."+TotalPages,"vikas");
+
+                    retro(Url.SORT_POPULAR_BASE_URL,pages);
+                }else{
+                    Toast.makeText(getContext(),"Movies Not Available",Toast.LENGTH_LONG);
+                }
+                    //progressBar.setVisibility(View.VISIBLE);
+                }
+            else {
+                errorLayout.setVisibility(View.VISIBLE);
+                contLayout.setVisibility(View.GONE);
+            }
+
+            }
+
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(MOVIE_LOADER, null,this);
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -266,10 +314,18 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
           gridAdapter.swapCursor(cursor);
+        if (mPosition != ListView.INVALID_POSITION) {
+            // If we don't need to restart the loader, and there's a desired position to restore
+            // to, do so now.
+            recyclerView.smoothScrollToPosition(mPosition);
+        }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         gridAdapter.swapCursor(null);
     }
+
+
 }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 public class MoviesUtil {
 
-    private  Cursor cursor;
     public static void insertData(Context context,ArrayList<Movie> movies){
         Log.d("Vikas insert..........", "insert");
         Cursor c;
@@ -27,6 +26,8 @@ public class MoviesUtil {
         c=context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
                 null, null, null, null);
         int flag=0;
+        try{
+
         for (Movie movie : movies) {
             boolean cursorCheck = c.moveToFirst();
             if (cursorCheck) {
@@ -57,10 +58,10 @@ public class MoviesUtil {
                     builder.withValue(ColumnsMovies.ORIGIN_TITLE, (movie.getOriginTitle() == null) ? "" : movie.getOriginTitle());
                     builder.withValue(ColumnsMovies.OVERVIEW, (movie.getOverview() == null) ? "" : movie.getOverview());
                     builder.withValue(ColumnsMovies.RELEASE_DATE, (movie.getReleaseDate() == null) ? "" : movie.getReleaseDate());
-                    builder.withValue(ColumnsMovies.POPULARITY, (movie.getPopularity() == null) ? 0.0 : movie.getPopularity());
-                    builder.withValue(ColumnsMovies.VOTE_AVERAGE, (movie.getVoteAverage() == null) ? 0.0 : movie.getVoteAverage());
+                    builder.withValue(ColumnsMovies.POPULARITY,  movie.getPopularity());
+                    builder.withValue(ColumnsMovies.VOTE_AVERAGE, movie.getVoteAverage());
                     builder.withValue(ColumnsMovies.VIDEO, (movie.getVideo() == null) ? false : movie.getVideo());
-                    builder.withValue(ColumnsMovies.VOTE_COUNT, (movie.getVoteCount() == null) ? 0 : movie.getVoteCount());
+                    builder.withValue(ColumnsMovies.VOTE_COUNT, movie.getVoteCount());
                     builder.withValue(ColumnsMovies.FAVOURITE, (movie.getReleaseDate() == null) ? false : movie.isFavourite());
                     batchOperations.add(builder.build());
                 }
@@ -69,7 +70,7 @@ public class MoviesUtil {
 
 
 
-        try{
+
             context.getContentResolver().applyBatch(MoviesProvider.AUTHORITY, batchOperations);
         } catch(RemoteException | OperationApplicationException e){
             Log.e("vikas...........", "Error applying batch insert", e);
@@ -80,5 +81,37 @@ public class MoviesUtil {
 
     }
 
-    
+    /*public static ArrayList<Movie> getDatabaseContent(Context context){
+       Cursor cursor = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                null, null, null, null);
+        ArrayList<Movie> mArrayList = new ArrayList<Movie>();
+        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            // The Cursor is now set to the right position
+            mArrayList.add(new Movie(
+
+                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.POSTER_PATH)),
+                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.ADULT))>0,
+                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.OVERVIEW)),
+                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.RELEASE_DATE)),
+                    null,
+                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.KEY)),
+                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.ORIGIN_LANGUAGE)),
+                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.ORIGIN_TITLE)),
+                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.TITLE)),
+                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.BACKDROP_PATH)),
+                    cursor.getDouble(cursor.getColumnIndex(ColumnsMovies.POPULARITY)),
+                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.VOTE_COUNT)),
+                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.VIDEO))>0,
+                    cursor.getDouble(cursor.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)),
+                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.FAVOURITE))>0));
+
+        }
+
+        return mArrayList;
+    }*/
+
+    public static Cursor getCursor(Context context) {
+        return context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                null, null, null, null);
+    }
 }
