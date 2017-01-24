@@ -11,6 +11,17 @@ import com.google.gson.annotations.SerializedName;
 
 public class MovieReview implements Parcelable {
 
+    public static final Parcelable.Creator<MovieReview> CREATOR = new Parcelable.Creator<MovieReview>() {
+        @Override
+        public MovieReview createFromParcel(Parcel source) {
+            return new MovieReview(source);
+        }
+
+        @Override
+        public MovieReview[] newArray(int size) {
+            return new MovieReview[size];
+        }
+    };
     @SerializedName("id")
     private String mId;
     @SerializedName("author")
@@ -50,7 +61,6 @@ public class MovieReview implements Parcelable {
                 '}';
     }
 
-
     public String getId() {
         return mId;
     }
@@ -82,15 +92,4 @@ public class MovieReview implements Parcelable {
     public void setUrl(String mUrl) {
         this.mUrl = mUrl;
     }
-    public static final Parcelable.Creator<MovieReview> CREATOR = new Parcelable.Creator<MovieReview>() {
-        @Override
-        public MovieReview createFromParcel(Parcel source) {
-            return new MovieReview(source);
-        }
-
-        @Override
-        public MovieReview[] newArray(int size) {
-            return new MovieReview[size];
-        }
-    };
 }
