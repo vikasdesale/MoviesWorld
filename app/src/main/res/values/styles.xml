@@ -21,5 +21,10 @@
         <item name="spb_progressiveStart_activated">true</item>
         <item name="spb_generate_background_with_colors">false</item>
     </style>
+    <style name="MovieTrailersItem">
+        <item name="android:paddingTop">@dimen/trailer_divider_height</item>
+        <item name="android:paddingBottom">@dimen/trailer_divider_height</item>
+    </style>
 
+    <dimen name="trailer_divider_height" />
 </resources>

@@ -7,13 +7,19 @@
     android:fillViewport="true">
 
     <RelativeLayout
-        android:id="@+id/activity_details"
+        android:id="@+id/contentMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBack"
         android:orientation="vertical"
         tools:context=".activities.DetailsActivity$DetailsFragment">
-
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/activity_details"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBack"
+        android:orientation="vertical"
+        tools:context=".activities.DetailsActivity$DetailsFragment">
         <RelativeLayout
             android:id="@+id/relative1"
             android:layout_width="match_parent"
@@ -97,7 +103,16 @@
             android:layout_marginTop="@dimen/viewTop"
             android:padding="@dimen/overPadding"
             android:textColor="@color/textColor" />
-
-
+    </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/movieTrailer"
+        android:layout_below="@+id/activity_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/movieReview"
+        android:layout_below="@+id/movieTrailer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     </RelativeLayout>
 </ScrollView>

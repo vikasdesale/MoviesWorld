@@ -11,6 +11,9 @@
     <dimen name="viewHeight">1dp</dimen>
     <dimen name="overPadding">5dp</dimen>
     <dimen name="colDim">125dp</dimen>
+    <dimen name="list_trialer_name_left" >15dp</dimen>
+    <dimen name="list_trailer_height" >40dp</dimen>
+    <dimen name="list_trailer_width" >40dp</dimen>
 
 
 </resources>
