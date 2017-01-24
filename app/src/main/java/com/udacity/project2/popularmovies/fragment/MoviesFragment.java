@@ -81,7 +81,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     String type;
     private Cursor c;
     private static final int MOVIE_LOADER = 0;
-    private int mPosition =ListView.INVALID_POSITION;
+    private int mPosition =GridView.INVALID_POSITION;
     private static final String SELECTED_KEY = "selected_position";
     public MoviesFragment() {
     }
@@ -314,7 +314,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
           gridAdapter.swapCursor(cursor);
-        if (mPosition != ListView.INVALID_POSITION) {
+        if (mPosition != GridView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
             recyclerView.smoothScrollToPosition(mPosition);
