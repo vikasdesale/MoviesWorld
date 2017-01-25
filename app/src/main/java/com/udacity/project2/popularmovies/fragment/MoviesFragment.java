@@ -239,7 +239,6 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             intent.putExtra("overview", c.getString(c.getColumnIndex(ColumnsMovies.OVERVIEW)));
             intent.putExtra("date", c.getString(c.getColumnIndex(ColumnsMovies.RELEASE_DATE)));
             intent.putExtra("vote", c.getDouble(c.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
-
             startActivity(intent);
         }
     }

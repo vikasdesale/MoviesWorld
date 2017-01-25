@@ -2,6 +2,7 @@ package com.udacity.project2.popularmovies.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,6 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
       Result parcelable = parcel.get(position);
         viewHolder.imageView.setImageResource (android.R.drawable.ic_media_play);
         viewHolder.textView.setText(parcelable.getName());
-        i++;
     }
 
     public void setClickListener(RecyclerViewTrailerAdapter.ClickListener clickListener){
@@ -69,6 +69,7 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
     public int getItemCount() {
         return parcel.size();
     }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @BindView(R.id.trailerIcon)
         ImageView imageView;

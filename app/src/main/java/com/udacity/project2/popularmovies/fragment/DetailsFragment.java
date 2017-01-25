@@ -1,14 +1,19 @@
 package com.udacity.project2.popularmovies.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -25,6 +30,7 @@ import com.udacity.project2.popularmovies.parcelable.Result;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
 import com.udacity.project2.popularmovies.retrofitusedinproject.MovieResponse;
+import com.udacity.project2.popularmovies.retrofitusedinproject.MovieTrailerResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,38 +61,58 @@ public class DetailsFragment extends Fragment {
     TextView overview;
     @BindView(R.id.imageView)
     ImageView img;
+    @BindView(R.id.progressbar)
+    ProgressBar progressBar;
+    @BindView(R.id.progressContent)
+    LinearLayout progressContent;
+    @BindView(R.id.contentMain)
+    LinearLayout contentMain;
+
     private Unbinder unbinder;
     @BindView(R.id.movieTrailer)
     RecyclerView movieTrailerView;
     String id;
-    private ArrayList<MovieTrailer> movieTrailers;
+    private ArrayList<Result> result;
     private ArrayList<MovieReview> movieReview;
     private RecyclerViewReviewAdapter reviewAdapter;
     private RecyclerViewTrailerAdapter trailerAdapter;
+    private LinearLayoutManager mLinearLayoutManager;
+    private Intent intent;
+    View rootView;
     public DetailsFragment() {
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        intent = getActivity().getIntent();
+        if (intent != null) {
+            id = intent.getStringExtra("id");
+            Log.d("vikas........", "" + id);
+
+
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_details, container, false);
+        rootView = inflater.inflate(R.layout.fragment_details, container, false);
         unbinder = ButterKnife.bind(this, rootView);
-        Intent intent = getActivity().getIntent();
-        if (intent != null) {
-            id = intent.getStringExtra("id");
-            Log.d("vikas........",""+id);
-            getTrailers(id);
-            Log.d("id..........",""+movieTrailers);
-            setUpAdapter(movieTrailers);
-            title.setText("" + intent.getStringExtra("title"));
-            String s = intent.getStringExtra("poster");
-            String posterUrl = Url.POSTER_URL + s;
-            Picasso.with(getContext()).load(posterUrl)
-                    .into(img);
-            rate.setText("Rating: " + intent.getDoubleExtra("vote", 0) + "/10");
-            date.setText("Release Date: " + intent.getStringExtra("date"));
-            overview.setText("Overview: " + intent.getStringExtra("overview"));
-        }
+        contentMain.setVisibility(rootView.GONE);
+        movieTrailerView.setHasFixedSize(true);
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        movieTrailerView.setLayoutManager(mLinearLayoutManager);
+        result = getTrailers(id);
+
 
         return rootView;
 
@@ -100,38 +126,46 @@ public class DetailsFragment extends Fragment {
         unbinder.unbind();
     }
 
-public ArrayList<MovieTrailer> getTrailers(String id){
+public ArrayList<Result> getTrailers(String id){
 
     ApiInterface apiService =
             ApiClient.getClient().create(ApiInterface.class);
 
-    Call<MovieResponse> call = null;
+    Call<MovieTrailerResponse> call = null;
 
         call = apiService.getMovieTrailers(id,BuildConfig.THE_MOVIE_DB_API_KEY);
 
-    call.enqueue(new Callback<MovieResponse>() {
+    call.enqueue(new Callback<MovieTrailerResponse>() {
         @Override
-        public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-            movieTrailers = (ArrayList<MovieTrailer>) response.body().getTrailerResults();
-            Log.d("id..........",""+movieTrailers);
-            Log.d(TAG, "server contacted at: " + call.request().url());
+        public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
+         result= (ArrayList<Result>) response.body().getResults();
+            Log.d("id..........", "" + result);
+            if (result != null) {
+                trailerAdapter = new RecyclerViewTrailerAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, result);
+                movieTrailerView.setAdapter(trailerAdapter);
+                title.setText("" + intent.getStringExtra("title"));
+                String s = intent.getStringExtra("poster");
+                String posterUrl = Url.POSTER_URL + s;
+                Picasso.with(getContext()).load(posterUrl)
+                        .into(img);
+                rate.setText("Rating: " + intent.getDoubleExtra("vote", 0) + "/10");
+                date.setText("Release Date: " + intent.getStringExtra("date"));
+                overview.setText("Overview: " + intent.getStringExtra("overview"));
+                contentMain.setVisibility(rootView.VISIBLE);
+                progressBar.setVisibility(rootView.GONE);
+
+            }
 
         }
 
         @Override
-        public void onFailure(Call<MovieResponse> call, Throwable t) {
+        public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
             // Log error here since request failed
             Log.e(TAG, t.toString());
-            Log.d(TAG, "server contacted at: " + call.request().url());
         }
     });
 
-        return movieTrailers;
+        return result;
     }
-    public void setUpAdapter(ArrayList<MovieTrailer> movieTrailers) {
-        ArrayList<Result> m=null;
-        trailerAdapter=new RecyclerViewTrailerAdapter(getActivity(),R.layout.list_item_movie_trailer,m);
-        movieTrailerView.setAdapter(trailerAdapter);
 
-    }
 }
