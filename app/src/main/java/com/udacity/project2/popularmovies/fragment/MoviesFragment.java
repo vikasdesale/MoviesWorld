@@ -24,8 +24,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.udacity.project2.popularmovies.adapter.RecyclerViewReviewAdapter;
-import com.udacity.project2.popularmovies.adapter.RecyclerViewTrailerAdapter;
 import com.udacity.project2.popularmovies.database.MoviesProvider;
 import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
@@ -39,8 +37,6 @@ import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
 import com.udacity.project2.popularmovies.layout.GridLayoutManagerAutoFit;
 import com.udacity.project2.popularmovies.network.NetworkUtil;
-import com.udacity.project2.popularmovies.parcelable.MovieReview;
-import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
 import com.udacity.project2.popularmovies.retrofitusedinproject.MovieResponse;

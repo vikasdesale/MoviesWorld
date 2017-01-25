@@ -1,9 +1,10 @@
 package com.udacity.project2.popularmovies.fragment;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,23 +21,19 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.udacity.project2.popularmovies.BuildConfig;
 import com.udacity.project2.popularmovies.R;
+import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewReviewAdapter;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewTrailerAdapter;
-import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.network.NetworkUtil;
 import com.udacity.project2.popularmovies.network.Url;
-import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.parcelable.MovieReview;
-import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
-import com.udacity.project2.popularmovies.parcelable.Result;
+import com.udacity.project2.popularmovies.parcelable.MovieTrailerResults;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
-import com.udacity.project2.popularmovies.retrofitusedinproject.MovieResponse;
+import com.udacity.project2.popularmovies.retrofitusedinproject.MovieReviewResponse;
 import com.udacity.project2.popularmovies.retrofitusedinproject.MovieTrailerResponse;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,13 +43,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
-import static com.udacity.project2.popularmovies.database.MoviesUtil.getCursor;
 
 /**
  * Created by Dell on 12/22/2016.
  */
 
-public class DetailsFragment extends Fragment {
+public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdapter.ClickListener {
     @BindView(R.id.title)
     TextView title;
     @BindView(R.id.rdate)
@@ -69,16 +65,15 @@ public class DetailsFragment extends Fragment {
     LinearLayout progressContent;
     @BindView(R.id.contentMain)
     LinearLayout contentMain;
-    private final String Trailer_Parse = "found";
-    private final String Movie_Parse = "found";
-    private final String Review_Parse = "found";
-
     private Unbinder unbinder;
+    @BindView(R.id.movieReview)
+    RecyclerView movieReviewView;
     @BindView(R.id.movieTrailer)
     RecyclerView movieTrailerView;
+
     String id;
-    private ArrayList<Result> result;
-    private ArrayList<MovieReview> movieReview;
+    private ArrayList<MovieTrailerResults> movieTrailerResults;
+    private ArrayList<MovieReview> movieReviewResults;
     private RecyclerViewReviewAdapter reviewAdapter;
     private RecyclerViewTrailerAdapter trailerAdapter;
     private LinearLayoutManager mLinearLayoutManager;
@@ -92,12 +87,15 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (NetworkUtil.isNetworkConnected(getActivity())) {
-            if (savedInstanceState == null || !savedInstanceState.containsKey("v") ||
-                    savedInstanceState.getParcelableArrayList("v") == null) {
+            if (savedInstanceState == null || !savedInstanceState.containsKey("trailers") ||
+                    savedInstanceState.getParcelableArrayList("trailers") == null||
+                    !savedInstanceState.containsKey("reviews") ||
+                    savedInstanceState.getParcelableArrayList("reviews") == null) {
                getTrailers(id);
 
             } else{
-                result= savedInstanceState.getParcelableArrayList("v");
+                movieTrailerResults = savedInstanceState.getParcelableArrayList("trailers");
+                movieReviewResults = savedInstanceState.getParcelableArrayList("reviews");
             }
 
        }
@@ -112,9 +110,6 @@ public class DetailsFragment extends Fragment {
         intent = getActivity().getIntent();
         if (intent != null) {
             id = intent.getStringExtra("id");
-            Log.d("vikas........", "" + id);
-
-
         }
     }
 
@@ -124,16 +119,21 @@ public class DetailsFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_details, container, false);
         unbinder = ButterKnife.bind(this, rootView);
         contentMain.setVisibility(rootView.GONE);
-        movieTrailerView.setHasFixedSize(true);
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
-        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        movieTrailerView.setLayoutManager(mLinearLayoutManager);
-        if(result!=null){                setData(result);
+        setLayoutManager(movieTrailerView);
+        setLayoutManager(movieReviewView);
+        if(movieTrailerResults !=null && movieReviewResults !=null){
+            setData(movieTrailerResults,movieReviewResults);
         }
         return rootView;
 
     }
 
+    void setLayoutManager(RecyclerView view){
+        view.setHasFixedSize(true);
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        view.setLayoutManager(mLinearLayoutManager);
+    }
     // When binding a fragment in onCreateView, set the views to null in onDestroyView.
     // ButterKnife returns an Unbinder on the initial binding that has an unbind method to do this automatically.
     @Override
@@ -142,46 +142,20 @@ public class DetailsFragment extends Fragment {
         unbinder.unbind();
     }
 
-public void getTrailers(String id){
-    if (NetworkUtil.isNetworkConnected(getActivity())) {
 
-        ApiInterface apiService =
-                ApiClient.getClient().create(ApiInterface.class);
-
-        Call<MovieTrailerResponse> call = null;
-
-        call = apiService.getMovieTrailers(id, BuildConfig.THE_MOVIE_DB_API_KEY);
-
-        call.enqueue(new Callback<MovieTrailerResponse>() {
-            @Override
-            public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
-                result = (ArrayList<Result>) response.body().getResults();
-                Log.d("id..........", "" + result);
-                setData(result);
-            }
-
-            @Override
-            public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
-                // Log error here since request failed
-                Log.e(TAG, t.toString());
-            }
-        });
-
-    }else {
-
-        Toast.makeText(getContext(),"Hello Check Internet Connection and Try again...",Toast.LENGTH_SHORT);
-    }
-
-    }
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("v", result);
+        outState.putParcelableArrayList("trailers", movieTrailerResults);
+        outState.putParcelableArrayList("reviews", movieReviewResults);
+
         super.onSaveInstanceState(outState);
     }
-    public void setData(ArrayList<Result> result) {
-        if (result != null) {
-            trailerAdapter = new RecyclerViewTrailerAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, result);
+    public void setData(ArrayList<MovieTrailerResults> movieTrailerResults,ArrayList<MovieReview> movieReviews) {
+        if (movieTrailerResults != null && movieReviews !=null) {
+            trailerAdapter = new RecyclerViewTrailerAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, movieTrailerResults);
             movieTrailerView.setAdapter(trailerAdapter);
+            reviewAdapter = new RecyclerViewReviewAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, movieReviews);
+            movieReviewView.setAdapter(reviewAdapter);
             title.setText("" + intent.getStringExtra("title"));
             String s = intent.getStringExtra("poster");
             String posterUrl = Url.POSTER_URL + s;
@@ -195,5 +169,83 @@ public void getTrailers(String id){
 
         }
 
+    }
+
+
+
+    public void getTrailers(final String id) {
+        if (NetworkUtil.isNetworkConnected(getActivity())) {
+
+            ApiInterface apiService =
+                    ApiClient.getClient().create(ApiInterface.class);
+
+            Call<MovieTrailerResponse> call = null;
+
+            call = apiService.getMovieTrailers(id, BuildConfig.THE_MOVIE_DB_API_KEY);
+
+            call.enqueue(new Callback<MovieTrailerResponse>() {
+                @Override
+                public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
+                    movieTrailerResults = (ArrayList<MovieTrailerResults>) response.body().getMovieTrailerResults();
+                    Log.d("id..........", "" + movieTrailerResults);
+                    getReviews(id,movieTrailerResults);
+                }
+
+                @Override
+                public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
+                    // Log error here since request failed
+                    Log.e(TAG, t.toString());
+                }
+            });
+
+        } else {
+
+            Toast.makeText(getContext(), "Hello Check Internet Connection and Try again...", Toast.LENGTH_SHORT);
+        }
+    }
+    public void getReviews(String id, final ArrayList<MovieTrailerResults> movieTrailers){
+        if (NetworkUtil.isNetworkConnected(getActivity())) {
+
+            ApiInterface apiService =
+                    ApiClient.getClient().create(ApiInterface.class);
+
+            Call<MovieReviewResponse> call = null;
+
+            call = apiService.getMovieReviews(id, BuildConfig.THE_MOVIE_DB_API_KEY);
+
+            call.enqueue(new Callback<MovieReviewResponse>() {
+                @Override
+                public void onResponse(Call<MovieReviewResponse> call, Response<MovieReviewResponse> response) {
+                    movieReviewResults= (ArrayList<MovieReview>) response.body().getMovieReviews();
+                    setData(movieTrailers,movieReviewResults);
+                }
+
+                @Override
+                public void onFailure(Call<MovieReviewResponse> call, Throwable t) {
+                    // Log error here since request failed
+                    Log.e(TAG, t.toString());
+                }
+            });
+
+        }else {
+
+            Toast.makeText(getContext(),"Hello Check Internet Connection and Try again...",Toast.LENGTH_SHORT);
+        }
+
+    }
+
+
+    @Override
+    public void itemClicked(View view, int position) {
+        Toast.makeText(getContext(),"Hello Check Internet Connection and Try again...",Toast.LENGTH_SHORT);
+        MovieTrailerResults movieTrailersClick=movieTrailerResults.get(position);
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" +movieTrailersClick.getKey()));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" +movieTrailersClick.getKey()));
+        try {
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
+        }
     }
 }

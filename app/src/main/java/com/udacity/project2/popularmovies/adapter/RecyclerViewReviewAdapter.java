@@ -5,12 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.parcelable.MovieReview;
-import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
 
 import java.util.ArrayList;
 

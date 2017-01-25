@@ -7,11 +7,10 @@ package com.udacity.project2.popularmovies.parcelable;
  import java.io.Serializable;
         import android.os.Parcel;
         import android.os.Parcelable;
-        import android.os.Parcelable.Creator;
-        import com.google.gson.annotations.Expose;
-        import com.google.gson.annotations.SerializedName;
 
-public class Result implements Serializable, Parcelable
+ import com.google.gson.annotations.SerializedName;
+
+public class MovieTrailerResults implements Serializable, Parcelable
 {
 
     @SerializedName("id")
@@ -30,14 +29,14 @@ public class Result implements Serializable, Parcelable
     private Integer size;
     @SerializedName("type")
     private String type;
-    public final static Parcelable.Creator<Result> CREATOR = new Creator<Result>() {
+    public final static Parcelable.Creator<MovieTrailerResults> CREATOR = new Creator<MovieTrailerResults>() {
 
 
         @SuppressWarnings({
                 "unchecked"
         })
-        public Result createFromParcel(Parcel in) {
-            Result instance = new Result();
+        public MovieTrailerResults createFromParcel(Parcel in) {
+            MovieTrailerResults instance = new MovieTrailerResults();
             instance.id = ((String) in.readValue((String.class.getClassLoader())));
             instance.iso6391 = ((String) in.readValue((String.class.getClassLoader())));
             instance.iso31661 = ((String) in.readValue((String.class.getClassLoader())));
@@ -49,8 +48,8 @@ public class Result implements Serializable, Parcelable
             return instance;
         }
 
-        public Result[] newArray(int size) {
-            return (new Result[size]);
+        public MovieTrailerResults[] newArray(int size) {
+            return (new MovieTrailerResults[size]);
         }
 
     }

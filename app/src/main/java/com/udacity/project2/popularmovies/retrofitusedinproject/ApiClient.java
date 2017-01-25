@@ -1,10 +1,5 @@
 package com.udacity.project2.popularmovies.retrofitusedinproject;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
-
-import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

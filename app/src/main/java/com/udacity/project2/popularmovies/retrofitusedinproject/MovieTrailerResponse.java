@@ -1,9 +1,7 @@
 package com.udacity.project2.popularmovies.retrofitusedinproject;
 
 import com.google.gson.annotations.SerializedName;
-import com.udacity.project2.popularmovies.parcelable.Movie;
-import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
-import com.udacity.project2.popularmovies.parcelable.Result;
+import com.udacity.project2.popularmovies.parcelable.MovieTrailerResults;
 
 import java.util.List;
 
@@ -16,7 +14,7 @@ public class MovieTrailerResponse {
     @SerializedName("id")
     private int id;
     @SerializedName("results")
-    private List<Result> results;
+    private List<MovieTrailerResults> movieTrailerResults;
 
 
 
@@ -28,11 +26,11 @@ public class MovieTrailerResponse {
         this.id = id;
     }
 
-    public List<Result> getResults() {
-        return results;
+    public List<MovieTrailerResults> getMovieTrailerResults() {
+        return movieTrailerResults;
     }
 
-    public void setResults(List<Result> results) {
-        this.results = results;
+    public void setMovieTrailerResults(List<MovieTrailerResults> movieTrailerResults) {
+        this.movieTrailerResults = movieTrailerResults;
     }
 }

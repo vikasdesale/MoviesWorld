@@ -10,8 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.udacity.project2.popularmovies.R;
-import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
-import com.udacity.project2.popularmovies.parcelable.Result;
+import com.udacity.project2.popularmovies.parcelable.MovieTrailerResults;
 
 import java.util.ArrayList;
 
@@ -27,14 +26,14 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
 
     private Context mContext;
     private int resource;
-    private ArrayList<Result> parcel;
+    private ArrayList<MovieTrailerResults> parcel;
     private View view;
     private LayoutInflater inflater;
     public ClickListener clickListener;
     private int mPreviousPosition = 0;
     int i=0;
 
-    public RecyclerViewTrailerAdapter(Context context, int resource, ArrayList<Result> parcelable) {
+    public RecyclerViewTrailerAdapter(Context context, int resource, ArrayList<MovieTrailerResults> parcelable) {
         this.resource=resource;
         this.mContext=context;
         this.parcel=parcelable;
@@ -51,7 +50,7 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 //get the data item
-      Result parcelable = parcel.get(position);
+      MovieTrailerResults parcelable = parcel.get(position);
         viewHolder.imageView.setImageResource (android.R.drawable.ic_media_play);
         viewHolder.textView.setText(parcelable.getName());
     }
@@ -70,6 +69,11 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
         return parcel.size();
     }
 
+    public interface ClickListener {
+        public void itemClicked(View view, int position);
+    }
+
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @BindView(R.id.trailerIcon)
         ImageView imageView;
@@ -86,12 +90,13 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
         @Override
         public void onClick(View v) {
 
-            if(clickListener!=null){
+            //if(clickListener!=null){
+                Log.d("Vikas................","Item Clicked"+getPosition());
+
                 clickListener.itemClicked(v,getPosition());
-            }
+                int d=getPosition();
+//            }
         }
     }
-    public  interface ClickListener{
-        public void itemClicked(View view,int position);
-    }
+
 }

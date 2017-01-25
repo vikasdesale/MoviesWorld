@@ -6,6 +6,8 @@
     <string name="action_settings">Settings</string>
     <string name="title">Title</string>
     <string name="rating">Rating:-</string>
+    <string name="trailers">Trailers:-</string>
+    <string name="reviews">Reviews:-</string>
 
 
 </resources>

@@ -9,12 +9,19 @@
     <TextView
         android:id="@+id/listItemReviewAuthor"
         android:textStyle="bold"
+        android:layout_marginTop="@dimen/viewTop"
+        android:padding="@dimen/overPadding"
+        android:background="@color/colorAccent"
+        android:textColor="@color/textColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
 
     <TextView
         android:id="@+id/listItemReviewContent"
+        android:textColor="@color/textColor"
+        android:layout_marginTop="@dimen/viewTop"
+        android:padding="@dimen/overPadding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />

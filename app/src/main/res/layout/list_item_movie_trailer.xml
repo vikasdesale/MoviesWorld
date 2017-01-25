@@ -3,11 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/colorAccent"
-    style="@style/MovieTrailersItem"
+    android:orientation="vertical"
     >
-
+      <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/viewHeight"
+      android:layout_marginTop="@dimen/viewTop"
+      android:background="@color/colorAccent" />
+     <LinearLayout   android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/MovieTrailersItem"
+        >
     <ImageView
         android:id="@+id/trailerIcon"
         android:src="@android:drawable/ic_media_play"
@@ -23,5 +30,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
+     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/viewHeight"
+        android:layout_marginTop="@dimen/viewTop"
+        android:background="@color/colorAccent" />
 </LinearLayout>
