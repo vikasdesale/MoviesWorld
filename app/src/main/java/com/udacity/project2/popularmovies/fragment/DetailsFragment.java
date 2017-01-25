@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.udacity.project2.popularmovies.BuildConfig;
 import com.udacity.project2.popularmovies.R;
+import com.udacity.project2.popularmovies.activities.DetailsActivity;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewReviewAdapter;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewTrailerAdapter;
@@ -153,6 +154,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     public void setData(ArrayList<MovieTrailerResults> movieTrailerResults,ArrayList<MovieReview> movieReviews) {
         if (movieTrailerResults != null && movieReviews !=null) {
             trailerAdapter = new RecyclerViewTrailerAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, movieTrailerResults);
+            trailerAdapter.setClickListener(this);
             movieTrailerView.setAdapter(trailerAdapter);
             reviewAdapter = new RecyclerViewReviewAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, movieReviews);
             movieReviewView.setAdapter(reviewAdapter);

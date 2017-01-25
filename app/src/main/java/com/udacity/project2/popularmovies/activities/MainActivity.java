@@ -1,7 +1,10 @@
 package com.udacity.project2.popularmovies.activities;
 
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Window;
 
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.fragment.MoviesFragment;
@@ -9,7 +12,7 @@ import com.udacity.project2.popularmovies.fragment.MoviesFragment;
 /**
  * Created by Dell on 12/15/2016.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

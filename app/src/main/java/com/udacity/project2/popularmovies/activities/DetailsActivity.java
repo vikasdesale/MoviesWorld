@@ -2,6 +2,7 @@ package com.udacity.project2.popularmovies.activities;
 
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,7 +12,7 @@ import com.udacity.project2.popularmovies.fragment.DetailsFragment;
 /**
  * Created by Dell on 12/20/2016.
  */
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends ActionBarActivity {
 
 
     @Override
