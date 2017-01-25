@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
+import com.udacity.project2.popularmovies.parcelable.Result;
 
 import java.util.ArrayList;
 
@@ -25,14 +26,14 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
 
     private Context mContext;
     private int resource;
-    private ArrayList<MovieTrailer.Result> parcel;
+    private ArrayList<Result> parcel;
     private View view;
     private LayoutInflater inflater;
     public ClickListener clickListener;
     private int mPreviousPosition = 0;
     int i=0;
 
-    public RecyclerViewTrailerAdapter(Context context, int resource, ArrayList<MovieTrailer.Result> parcelable) {
+    public RecyclerViewTrailerAdapter(Context context, int resource, ArrayList<Result> parcelable) {
         this.resource=resource;
         this.mContext=context;
         this.parcel=parcelable;
@@ -49,7 +50,7 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 //get the data item
-        MovieTrailer.Result parcelable = parcel.get(position);
+      Result parcelable = parcel.get(position);
         viewHolder.imageView.setImageResource (android.R.drawable.ic_media_play);
         viewHolder.textView.setText(parcelable.getName());
         i++;

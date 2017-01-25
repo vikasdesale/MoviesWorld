@@ -21,6 +21,7 @@ import com.udacity.project2.popularmovies.network.Url;
 import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.parcelable.MovieReview;
 import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
+import com.udacity.project2.popularmovies.parcelable.Result;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
 import com.udacity.project2.popularmovies.retrofitusedinproject.MovieResponse;
@@ -128,7 +129,7 @@ public ArrayList<MovieTrailer> getTrailers(String id){
         return movieTrailers;
     }
     public void setUpAdapter(ArrayList<MovieTrailer> movieTrailers) {
-        ArrayList<MovieTrailer.Result> m=null;
+        ArrayList<Result> m=null;
         trailerAdapter=new RecyclerViewTrailerAdapter(getActivity(),R.layout.list_item_movie_trailer,m);
         movieTrailerView.setAdapter(trailerAdapter);
 
