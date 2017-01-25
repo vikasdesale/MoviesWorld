@@ -27,19 +27,6 @@ public class ApiClient {
         }
         return retrofit;
     }
-    public static Retrofit getClientTrailer() {
-        if (retrofit==null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(createGsonConverter())
-                    .build();
-        }
-        return retrofit;
-    }
-    public static Converter.Factory createGsonConverter() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(MovieTrailer.class, new MovieDeserializer());
-        Gson gson = gsonBuilder.create();
-        return GsonConverterFactory.create(gson);
-    }
+
+
 }

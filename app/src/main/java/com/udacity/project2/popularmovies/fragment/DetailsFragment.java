@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.project2.popularmovies.BuildConfig;
@@ -22,6 +23,7 @@ import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewReviewAdapter;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewTrailerAdapter;
 import com.udacity.project2.popularmovies.database.MoviesUtil;
+import com.udacity.project2.popularmovies.network.NetworkUtil;
 import com.udacity.project2.popularmovies.network.Url;
 import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.parcelable.MovieReview;
@@ -67,6 +69,9 @@ public class DetailsFragment extends Fragment {
     LinearLayout progressContent;
     @BindView(R.id.contentMain)
     LinearLayout contentMain;
+    private final String Trailer_Parse = "found";
+    private final String Movie_Parse = "found";
+    private final String Review_Parse = "found";
 
     private Unbinder unbinder;
     @BindView(R.id.movieTrailer)
@@ -86,6 +91,18 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (NetworkUtil.isNetworkConnected(getActivity())) {
+            if (savedInstanceState == null || !savedInstanceState.containsKey("v") ||
+                    savedInstanceState.getParcelableArrayList("v") == null) {
+               getTrailers(id);
+
+            } else{
+                result= savedInstanceState.getParcelableArrayList("v");
+            }
+
+       }
+
+
 
     }
 
@@ -111,9 +128,8 @@ public class DetailsFragment extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         movieTrailerView.setLayoutManager(mLinearLayoutManager);
-        result = getTrailers(id);
-
-
+        if(result!=null){                setData(result);
+        }
         return rootView;
 
     }
@@ -126,46 +142,58 @@ public class DetailsFragment extends Fragment {
         unbinder.unbind();
     }
 
-public ArrayList<Result> getTrailers(String id){
+public void getTrailers(String id){
+    if (NetworkUtil.isNetworkConnected(getActivity())) {
 
-    ApiInterface apiService =
-            ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
 
-    Call<MovieTrailerResponse> call = null;
+        Call<MovieTrailerResponse> call = null;
 
-        call = apiService.getMovieTrailers(id,BuildConfig.THE_MOVIE_DB_API_KEY);
+        call = apiService.getMovieTrailers(id, BuildConfig.THE_MOVIE_DB_API_KEY);
 
-    call.enqueue(new Callback<MovieTrailerResponse>() {
-        @Override
-        public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
-         result= (ArrayList<Result>) response.body().getResults();
-            Log.d("id..........", "" + result);
-            if (result != null) {
-                trailerAdapter = new RecyclerViewTrailerAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, result);
-                movieTrailerView.setAdapter(trailerAdapter);
-                title.setText("" + intent.getStringExtra("title"));
-                String s = intent.getStringExtra("poster");
-                String posterUrl = Url.POSTER_URL + s;
-                Picasso.with(getContext()).load(posterUrl)
-                        .into(img);
-                rate.setText("Rating: " + intent.getDoubleExtra("vote", 0) + "/10");
-                date.setText("Release Date: " + intent.getStringExtra("date"));
-                overview.setText("Overview: " + intent.getStringExtra("overview"));
-                contentMain.setVisibility(rootView.VISIBLE);
-                progressBar.setVisibility(rootView.GONE);
-
+        call.enqueue(new Callback<MovieTrailerResponse>() {
+            @Override
+            public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
+                result = (ArrayList<Result>) response.body().getResults();
+                Log.d("id..........", "" + result);
+                setData(result);
             }
 
-        }
+            @Override
+            public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e(TAG, t.toString());
+            }
+        });
 
-        @Override
-        public void onFailure(Call<MovieTrailerResponse> call, Throwable t) {
-            // Log error here since request failed
-            Log.e(TAG, t.toString());
-        }
-    });
+    }else {
 
-        return result;
+        Toast.makeText(getContext(),"Hello Check Internet Connection and Try again...",Toast.LENGTH_SHORT);
     }
 
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("v", result);
+        super.onSaveInstanceState(outState);
+    }
+    public void setData(ArrayList<Result> result) {
+        if (result != null) {
+            trailerAdapter = new RecyclerViewTrailerAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, result);
+            movieTrailerView.setAdapter(trailerAdapter);
+            title.setText("" + intent.getStringExtra("title"));
+            String s = intent.getStringExtra("poster");
+            String posterUrl = Url.POSTER_URL + s;
+            Picasso.with(getContext()).load(posterUrl)
+                    .into(img);
+            rate.setText("Rating: " + intent.getDoubleExtra("vote", 0) + "/10");
+            date.setText("Release Date: " + intent.getStringExtra("date"));
+            overview.setText("Overview: " + intent.getStringExtra("overview"));
+            contentMain.setVisibility(rootView.VISIBLE);
+            progressBar.setVisibility(rootView.GONE);
+
+        }
+
+    }
 }

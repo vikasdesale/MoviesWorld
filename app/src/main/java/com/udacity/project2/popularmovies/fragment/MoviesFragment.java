@@ -67,7 +67,6 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     private static final int MOVIE_LOADER = 0;
     private static final String SELECTED_KEY = "selected_position";
-    private final String Movie_Parse = "v";
     @BindView(R.id.progressbar)
     ProgressBar progressBar;
     @BindView(R.id.progressbar2)
