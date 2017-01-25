@@ -23,6 +23,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.udacity.project2.popularmovies.adapter.RecyclerViewReviewAdapter;
+import com.udacity.project2.popularmovies.adapter.RecyclerViewTrailerAdapter;
 import com.udacity.project2.popularmovies.database.MoviesProvider;
 import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
@@ -36,6 +39,8 @@ import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
 import com.udacity.project2.popularmovies.layout.GridLayoutManagerAutoFit;
 import com.udacity.project2.popularmovies.network.NetworkUtil;
+import com.udacity.project2.popularmovies.parcelable.MovieReview;
+import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
 import com.udacity.project2.popularmovies.retrofitusedinproject.MovieResponse;
@@ -228,6 +233,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         boolean cursor = c.moveToPosition(position);
         if (cursor) {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
+            intent.putExtra("id",c.getString(c.getColumnIndex(ColumnsMovies.KEY)));
             intent.putExtra("poster", c.getString(c.getColumnIndex(ColumnsMovies.POSTER_PATH)));
             intent.putExtra("title", c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
             intent.putExtra("overview", c.getString(c.getColumnIndex(ColumnsMovies.OVERVIEW)));
@@ -237,6 +243,8 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             startActivity(intent);
         }
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -330,6 +338,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     public void onLoaderReset(Loader<Cursor> loader) {
         gridAdapter.swapCursor(null);
     }
+
 
 
 }

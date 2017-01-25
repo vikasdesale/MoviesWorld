@@ -26,5 +26,4 @@
         <item name="android:paddingBottom">@dimen/trailer_divider_height</item>
     </style>
 
-    <dimen name="trailer_divider_height" />
 </resources>

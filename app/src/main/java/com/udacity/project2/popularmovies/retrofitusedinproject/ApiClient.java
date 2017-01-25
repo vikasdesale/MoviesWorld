@@ -1,5 +1,10 @@
 package com.udacity.project2.popularmovies.retrofitusedinproject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.udacity.project2.popularmovies.parcelable.MovieTrailer;
+
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -14,12 +19,27 @@ public class ApiClient {
 
 
     public static Retrofit getClient() {
-        if (retrofit==null) {
+        if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
         return retrofit;
+    }
+    public static Retrofit getClientTrailer() {
+        if (retrofit==null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(createGsonConverter())
+                    .build();
+        }
+        return retrofit;
+    }
+    public static Converter.Factory createGsonConverter() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(MovieTrailer.class, new MovieDeserializer());
+        Gson gson = gsonBuilder.create();
+        return GsonConverterFactory.create(gson);
     }
 }

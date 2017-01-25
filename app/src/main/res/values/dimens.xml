@@ -14,6 +14,6 @@
     <dimen name="list_trialer_name_left" >15dp</dimen>
     <dimen name="list_trailer_height" >40dp</dimen>
     <dimen name="list_trailer_width" >40dp</dimen>
-
+    <dimen name="trailer_divider_height">3dp</dimen>
 
 </resources>
