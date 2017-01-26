@@ -12,7 +12,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
 import com.udacity.project2.popularmovies.network.Url;
@@ -111,7 +112,9 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
         if (posterPath != null || title != null) {
             // viewHolder.imageView.setImageDrawable(null);
             String posterUrl = Url.POSTER_URL + posterPath;
-            Picasso.with(mContext).load(posterUrl)
+
+            //Got Advantages why to use Glide over picasso that's why replaced picasso.
+            Glide.with(mContext).load(posterUrl)
                     .into(viewHolder.imageView);
             viewHolder.textView.setText("" + title);
         } else {

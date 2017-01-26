@@ -25,8 +25,7 @@ public class Movie implements Parcelable {
         }
 
     };
-    @SerializedName("favourite")
-    boolean favourite = false;
+
     @SerializedName("poster_path")
     private String posterPath;
     @SerializedName("adult")
@@ -58,7 +57,7 @@ public class Movie implements Parcelable {
 
     public Movie(String posterPath, boolean adult, String overview, String releaseDate, List<Integer> genreIds, Integer id,
                  String originLanguage, String originTitle, String title, String backdropPath, Double popularity,
-                 Integer voteCount, Boolean video, Double voteAverage, boolean b) {
+                 Integer voteCount, Boolean video, Double voteAverage) {
         this.posterPath = posterPath;
         this.adult = adult;
         this.overview = overview;
@@ -73,7 +72,6 @@ public class Movie implements Parcelable {
         this.voteCount = voteCount;
         this.video = video;
         this.voteAverage = voteAverage;
-        this.favourite = b;
     }
 
     private Movie(Parcel in) {
@@ -92,7 +90,6 @@ public class Movie implements Parcelable {
         this.voteCount = in.readInt();
         this.video = in.readByte() != 0;
         this.voteAverage = in.readDouble();
-        this.favourite = in.readByte() != 0;
     }
 
     public String getPosterPath() {
@@ -219,19 +216,8 @@ public class Movie implements Parcelable {
         parcel.writeInt(this.voteCount);
         parcel.writeByte(this.video ? (byte) 1 : (byte) 0);
         parcel.writeDouble(this.voteAverage);
-        parcel.writeByte(favourite ? (byte) 1 : (byte) 0);
 
 
     }
 
-    public boolean isFavourite() {
-        return favourite;
-    }
-
-    public void setFavourite(boolean favourite) {
-        this.favourite = favourite;
-    }
-
-    public class Builder {
-    }
 }

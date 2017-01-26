@@ -53,7 +53,5 @@ public interface ColumnsMovies {
     @DataType(DataType.Type.INTEGER)
     @NotNull
     String VOTE_COUNT = "voteCount";
-    @DataType(DataType.Type.INTEGER)
-    String FAVOURITE = "favourite";
 
 }

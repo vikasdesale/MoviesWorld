@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Window;
 
 import com.udacity.project2.popularmovies.R;
+import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.fragment.MoviesFragment;
 
 /**
@@ -24,4 +25,5 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
     }
+
 }

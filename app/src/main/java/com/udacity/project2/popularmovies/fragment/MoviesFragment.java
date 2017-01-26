@@ -53,8 +53,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
-import static com.udacity.project2.popularmovies.database.MoviesUtil.dataUpgrade;
+import static com.udacity.project2.popularmovies.database.MoviesUtil.CacheDelete;
 import static com.udacity.project2.popularmovies.database.MoviesUtil.getCursor;
+import static com.udacity.project2.popularmovies.database.MoviesUtil.getFavouriteCursor;
 
 /**
  * Created by Dell on 12/15/2016.
@@ -102,21 +103,27 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
         layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
         recyclerView.setLayoutManager(layoutManager);
-        c = getCursor(getActivity());
-
-        if (c.getCount()!=0) {
+       //checking for movies in temporary database
+        if (getCursor(getActivity()).getCount()!=0) {
+            c = getFavouriteCursor(getActivity());
             progressBar.setVisibility(View.GONE);
             updateScreen(getCursor(getActivity()));
-        }else{
+        }else if(getFavouriteCursor(getActivity()).getCount()!=0)
+        {c = getFavouriteCursor(getActivity());
+            updateScreen(c);
+
+        }else if(getCursor(getActivity()).getCount()==0&&getFavouriteCursor(getActivity()).getCount()==0) {
             progressBar2.setVisibility(View.GONE);
-            settings(Url.SORT_POPULAR_BASE_URL);
+            if (!NetworkUtil.isNetworkConnected(getActivity())) {
+                progressBar.setVisibility(View.GONE);
+                progressBar2.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.VISIBLE);
+                contLayout.setVisibility(View.GONE);
+            } else {
+                settings(Url.SORT_POPULAR_BASE_URL);
+            }
         }
-        if (!NetworkUtil.isNetworkConnected(getActivity())) {
-            progressBar.setVisibility(View.GONE);
-            progressBar2.setVisibility(View.GONE);
-            errorLayout.setVisibility(View.VISIBLE);
-            contLayout.setVisibility(View.GONE);
-        }
+
 
         scroll = (ScrollViewExt) view.findViewById(R.id.scroll);
         scroll.setScrollViewListener(this);
@@ -139,6 +146,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
         if (NetworkUtil.isNetworkConnected(getActivity())) {
             //METHOD 1 Retrofit:-
+            CacheDelete(getContext());
 
             //This is because internet connection goes down between activities
             if (errorLayout != null || progressBar != null || contLayout != null || progressBar2 != null) {
@@ -175,7 +183,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                 movieParcelable = (ArrayList<Movie>) response.body().getResults();
                 TotalPages = response.body().getTotalPages();
 
-                MoviesUtil.insertData(getContext(), movieParcelable);
+                MoviesUtil.insertData(getContext(), movieParcelable, "no");
                 c = getCursor(getActivity());
                 updateScreen(c);
                 progressBar.setVisibility(View.GONE);
@@ -244,10 +252,17 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
         if (id == R.id.action_favourite) {
-            settings(Url.SORT_POPULAR_BASE_URL);
+            c=getFavouriteCursor(getActivity());
+            CacheDelete(getContext());
+            if(c.getCount()==0){
+                Toast.makeText(getContext(),"NO Favourite Movies Add",Toast.LENGTH_SHORT).show();;
+            }else {
+                errorLayout.setVisibility(View.GONE);
+                contLayout.setVisibility(View.VISIBLE);
+                updateScreen(c);
+            }
             return true;
         }
         if (id == R.id.action_most_pop) {
@@ -309,11 +324,19 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        c = getCursor(getActivity());
+        if(c.getCount()!=0){
         return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
                 null,
                 null,
                 null,
-                null);
+                null);}else{
+          return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                  null,
+                  null,
+                  null,
+                  null);
+      }
     }
 
     @Override

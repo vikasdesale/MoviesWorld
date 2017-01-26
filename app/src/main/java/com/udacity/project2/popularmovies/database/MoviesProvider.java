@@ -29,24 +29,26 @@ public class MoviesProvider {
 
     interface Path {
         String MY_MOVIES = "myMovies";
+        String FAVOURITE_MOVIES = "myFavourite";
     }
 
     @TableEndpoint(table = MoviesDatabase.MY_MOVIES)
     public static class MyMovies {
         @ContentUri(
                 path = Path.MY_MOVIES,
-                type = "vnd.android.cursor.dir/favouriteMovies",
+                type = "vnd.android.cursor.dir/myMovies",
                 defaultSort = ColumnsMovies._ID + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.MY_MOVIES);
 
-        @InexactContentUri(
-                name = "FAVOURITE_MOVIE_ID",
-                path = Path.MY_MOVIES + "/#",
-                type = "vnd.android.cursor.item/favouriteMovie",
-                whereColumn = ColumnsMovies.KEY,
-                pathSegment = 1)
-        public static Uri withId(long id) {
-            return buildUri(Path.MY_MOVIES, String.valueOf(id));
         }
+
+    @TableEndpoint(table = MoviesDatabase.FAVOURITE_MOVIES)
+    public static class FavouriteMovies {
+        @ContentUri(
+                path = Path.FAVOURITE_MOVIES,
+                type = "vnd.android.cursor.dir/myFavourite",
+                defaultSort = ColumnsMovies._ID + " ASC")
+        public static final Uri CONTENT_URI_FAVOURITE = buildUri(Path.FAVOURITE_MOVIES);
+
     }
 }

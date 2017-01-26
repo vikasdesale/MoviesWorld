@@ -23,15 +23,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.udacity.project2.popularmovies.BuildConfig;
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.activities.DetailsActivity;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewReviewAdapter;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewTrailerAdapter;
+import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.network.NetworkUtil;
 import com.udacity.project2.popularmovies.network.Url;
+import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.parcelable.MovieReview;
 import com.udacity.project2.popularmovies.parcelable.MovieTrailerResults;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
@@ -54,7 +57,7 @@ import static android.content.ContentValues.TAG;
  * Created by Dell on 12/22/2016.
  */
 
-public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdapter.ClickListener {
+public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdapter.ClickListener, View.OnClickListener {
     @BindView(R.id.title)
     TextView title;
     @BindView(R.id.rdate)
@@ -78,7 +81,14 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     RecyclerView movieReviewView;
     @BindView(R.id.movieTrailer)
     RecyclerView movieTrailerView;
-
+    @BindView(R.id.myFavourite)
+    ImageView myFavourite;
+    String mtitle;
+    String mPosterPath;
+    String mPosterUrl;
+    double mRating;
+    String mDate;
+    String mOverview;
     String id;
     private ArrayList<MovieTrailerResults> movieTrailerResults;
     private ArrayList<MovieReview> movieReviewResults;
@@ -166,17 +176,22 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
             movieTrailerView.setAdapter(trailerAdapter);
             reviewAdapter = new RecyclerViewReviewAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, movieReviews);
             movieReviewView.setAdapter(reviewAdapter);
-            title.setText("" + intent.getStringExtra("title"));
-            String s = intent.getStringExtra("poster");
-            String posterUrl = Url.POSTER_URL + s;
-            Picasso.with(getContext()).load(posterUrl)
+            mtitle=intent.getStringExtra("title");
+            title.setText("" +mtitle);
+            mPosterPath = intent.getStringExtra("poster");
+            mPosterUrl = Url.POSTER_URL + mPosterPath;
+            Glide.with(getContext()).load(mPosterUrl)
+                    .fitCenter()
                     .into(img);
-            rate.setText("Rating: " + intent.getDoubleExtra("vote", 0) + "/10");
-            date.setText("Release Date: " + intent.getStringExtra("date"));
-            overview.setText("Overview: " + intent.getStringExtra("overview"));
+            mRating=intent.getDoubleExtra("vote", 0);
+            mDate=intent.getStringExtra("date");
+            mOverview=intent.getStringExtra("overview");
+            rate.setText("Rating: " + mRating+ "/10");
+            date.setText("Release Date: " +mDate);
+            overview.setText("Overview: " +mOverview );
             contentMain.setVisibility(rootView.VISIBLE);
             progressBar.setVisibility(rootView.GONE);
-
+            myFavourite.setOnClickListener(this);
         }
 
     }
@@ -277,4 +292,29 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         return shareIntent;
     }
 
+    @Override
+    public void onClick(View view) {
+        myFavourite.setImageResource(android.R.drawable.btn_star_big_on);
+
+       Movie movie;
+        movie = new Movie(mPosterPath,
+                                  false,
+                mOverview,
+                mDate,
+                null,
+                Integer.parseInt(id),
+                null,
+                null,
+                mtitle,
+                null,
+                0.0,
+                0,
+                false,
+                mRating);
+
+
+        ArrayList<Movie> m=new ArrayList<Movie>();
+        m.add(0,movie);
+        MoviesUtil.insertData(getContext(),m,"favourite");
+    }
 }

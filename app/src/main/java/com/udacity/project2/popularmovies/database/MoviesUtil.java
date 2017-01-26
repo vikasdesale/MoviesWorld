@@ -18,52 +18,67 @@ import java.util.ArrayList;
 
 public class MoviesUtil {
 
-    public static void insertData(Context context, ArrayList<Movie> movies) {
+    public static void insertData(Context context, ArrayList<Movie> movies,String storeF) {
         Log.d("Vikas insert..........", "insert");
         Cursor c=null;
-        ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movies.size());
-        c = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                null, null, null, null);
         int flag = 0;
+        ContentProviderOperation.Builder builder=null;
+        ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movies.size());
+       if(storeF.equals("favourite")){}
+        else {
+           c = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                   null, null, null, null);
+       }
+
         try {
 
             for (Movie movie : movies) {
-                boolean cursorCheck = c.moveToFirst();
-                if (cursorCheck) {
-                    Log.d("Vikas", String.valueOf(c.getCount()));
+                if(storeF.equals("favourite")) {
+                        flag=1;
+                }else {
 
-                    while (c.moveToNext()) {
-                        if (movie.getTitle().toString().equals(c.getString(c.getColumnIndex(ColumnsMovies.TITLE)))) {
-                            // Log.d("POPULAR MOVIES","Movie Title Same"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
-                            flag = 0;
-                            break;
-                        } else {
-                            flag = 1;
-                            // Log.d("POPULAR MOVIES","Movie Title Difference"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
+                    boolean cursorCheck = c.moveToFirst();
+                    if (cursorCheck) {
+                        Log.d("Vikas", String.valueOf(c.getCount()));
 
+                        while (c.moveToNext()) {
+                            if (movie.getTitle().toString().equals(c.getString(c.getColumnIndex(ColumnsMovies.TITLE)))) {
+                                // Log.d("POPULAR MOVIES","Movie Title Same"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
+                                flag = 0;
+                                break;
+                            } else {
+                                flag = 1;
+                                // Log.d("POPULAR MOVIES","Movie Title Difference"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
+
+                            }
                         }
                     }
                 }
+
                 if (flag == 1 || c.getCount() == 0)
-                    if (movie.getPosterPath() != null && movie.getTitle() != null && movie.getId() != null) {
-                        ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                    if (movie.getPosterPath() != null && movie.getTitle() != null && movie.getId() != null && storeF.equals("favourite")) {
+                        builder = ContentProviderOperation.newInsert(
+                                MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE);
+                    }else if(movie.getPosterPath() != null && movie.getTitle() != null && movie.getId() != null){
+                        builder = ContentProviderOperation.newInsert(
                                 MoviesProvider.MyMovies.CONTENT_URI);
-                        builder.withValue(ColumnsMovies.KEY, movie.getId());
-                        builder.withValue(ColumnsMovies.POSTER_PATH, movie.getPosterPath());
-                        builder.withValue(ColumnsMovies.TITLE, movie.getTitle());
-                        builder.withValue(ColumnsMovies.ADULT, movie.isAdult());
-                        builder.withValue(ColumnsMovies.BACKDROP_PATH, (movie.getBackdropPath() == null) ? "" : movie.getBackdropPath());
-                        builder.withValue(ColumnsMovies.ORIGIN_LANGUAGE, (movie.getOriginLanguage() == null) ? "" : movie.getOriginLanguage());
-                        builder.withValue(ColumnsMovies.ORIGIN_TITLE, (movie.getOriginTitle() == null) ? "" : movie.getOriginTitle());
-                        builder.withValue(ColumnsMovies.OVERVIEW, (movie.getOverview() == null) ? "" : movie.getOverview());
-                        builder.withValue(ColumnsMovies.RELEASE_DATE, (movie.getReleaseDate() == null) ? "" : movie.getReleaseDate());
-                        builder.withValue(ColumnsMovies.POPULARITY, movie.getPopularity());
-                        builder.withValue(ColumnsMovies.VOTE_AVERAGE, movie.getVoteAverage());
-                        builder.withValue(ColumnsMovies.VIDEO, (movie.getVideo() == null) ? false : movie.getVideo());
-                        builder.withValue(ColumnsMovies.VOTE_COUNT, movie.getVoteCount());
-                        builder.withValue(ColumnsMovies.FAVOURITE, (movie.getReleaseDate() == null) ? false : movie.isFavourite());
-                        batchOperations.add(builder.build());
                     }
+                if(builder!=null) {
+                    builder.withValue(ColumnsMovies.KEY, movie.getId());
+                    builder.withValue(ColumnsMovies.POSTER_PATH, movie.getPosterPath());
+                    builder.withValue(ColumnsMovies.TITLE, movie.getTitle());
+                    builder.withValue(ColumnsMovies.ADULT, movie.isAdult());
+                    builder.withValue(ColumnsMovies.BACKDROP_PATH, (movie.getBackdropPath() == null) ? "" : movie.getBackdropPath());
+                    builder.withValue(ColumnsMovies.ORIGIN_LANGUAGE, (movie.getOriginLanguage() == null) ? "" : movie.getOriginLanguage());
+                    builder.withValue(ColumnsMovies.ORIGIN_TITLE, (movie.getOriginTitle() == null) ? "" : movie.getOriginTitle());
+                    builder.withValue(ColumnsMovies.OVERVIEW, (movie.getOverview() == null) ? "" : movie.getOverview());
+                    builder.withValue(ColumnsMovies.RELEASE_DATE, (movie.getReleaseDate() == null) ? "" : movie.getReleaseDate());
+                    builder.withValue(ColumnsMovies.POPULARITY, movie.getPopularity());
+                    builder.withValue(ColumnsMovies.VOTE_AVERAGE, movie.getVoteAverage());
+                    builder.withValue(ColumnsMovies.VIDEO, (movie.getVideo() == null) ? false : movie.getVideo());
+                    builder.withValue(ColumnsMovies.VOTE_COUNT, movie.getVoteCount());
+                    batchOperations.add(builder.build());
+                }
 
             }
 
@@ -72,41 +87,11 @@ public class MoviesUtil {
         } catch (RemoteException | OperationApplicationException e) {
             Log.e("POPULAR MOVIES", "Error applying batch insert", e);
 
-        } finally {
-
-            c.close();
         }
 
     }
 
-    /*public static ArrayList<Movie> getDatabaseContent(Context context){
-       Cursor cursor = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                null, null, null, null);
-        ArrayList<Movie> mArrayList = new ArrayList<Movie>();
-        for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            // The Cursor is now set to the right position
-            mArrayList.add(new Movie(
 
-                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.POSTER_PATH)),
-                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.ADULT))>0,
-                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.OVERVIEW)),
-                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.RELEASE_DATE)),
-                    null,
-                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.KEY)),
-                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.ORIGIN_LANGUAGE)),
-                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.ORIGIN_TITLE)),
-                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.TITLE)),
-                    cursor.getString(cursor.getColumnIndex(ColumnsMovies.BACKDROP_PATH)),
-                    cursor.getDouble(cursor.getColumnIndex(ColumnsMovies.POPULARITY)),
-                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.VOTE_COUNT)),
-                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.VIDEO))>0,
-                    cursor.getDouble(cursor.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)),
-                    cursor.getInt(cursor.getColumnIndex(ColumnsMovies.FAVOURITE))>0));
-
-        }
-
-        return mArrayList;
-    }*/
 
     public static Cursor getCursor(Context context) {
         Cursor c=null;
@@ -119,12 +104,24 @@ public class MoviesUtil {
             return c;
     }
 
-    public static void dataUpgrade(Context context) {
+    public static Cursor getFavouriteCursor(Context context) {
+        Cursor c=null;
         try {
+
+            c = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                    null, null, null, null);
+        } catch (Exception e) {
+        }
+        return c;
+    }
+    public static void CacheDelete(Context context) {
+
+        try {
+
             context.getContentResolver().delete(MoviesProvider.MyMovies.CONTENT_URI,
                     null, null);
-        }catch (Exception e){
-
+        } catch (Exception e) {
         }
+
     }
 }

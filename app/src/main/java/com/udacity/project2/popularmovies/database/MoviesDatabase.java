@@ -19,30 +19,24 @@ import net.simonvt.schematic.annotation.Table;
 @Database(version = MoviesDatabase.VERSION)
 public class MoviesDatabase {
     public static final int VERSION = 1;
+
+    //temporary table
     @Table(ColumnsMovies.class)
     public static final String MY_MOVIES = "myMovies";
+
+    //permanent table
+    @Table(ColumnsMovies.class)
+    public static final String FAVOURITE_MOVIES = "myFavourite";
+
     @ExecOnCreate
     public static final String EXEC_ON_CREATE = "SELECT * FROM " + MY_MOVIES;
+
+    @ExecOnCreate
+    public static final String EXEC_ON_CREATE1 = "SELECT * FROM " + FAVOURITE_MOVIES;
 
     private MoviesDatabase() {
     }
 
-    @OnCreate
-    public static void onCreate(Context context, SQLiteDatabase db) {
 
-    }
-
-    @OnUpgrade
-    public static void onUpgrade(Context context, SQLiteDatabase db, int oldVersion,
-                                 int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + MY_MOVIES);
-        onCreate(context, db);
-
-    }
-
-    @OnConfigure
-    public static void onConfigure(SQLiteDatabase db) {
-
-    }
 
 }
