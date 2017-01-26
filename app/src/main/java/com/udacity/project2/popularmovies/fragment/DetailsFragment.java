@@ -70,25 +70,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     @BindView(R.id.progressContent)
     LinearLayout progressContent;
     private ShareActionProvider mShareActionProvider;
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        // Retrieve the share menu item
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-
-        // Get the provider and hold onto it to set/change the share intent.
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-
-        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
-        if ( != null) {
-            mShareActionProvider.setShareIntent(createShareMovieIntent());
-        }
-    }
-
-    private Intent createShareMovieIntent() {
-    }
-
+    private static final String MOVIE_SHARE_HASHTAG = " #MyMovies";
     @BindView(R.id.contentMain)
     LinearLayout contentMain;
     private Unbinder unbinder;
@@ -106,7 +88,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     private Intent intent;
     View rootView;
     public DetailsFragment() {
-
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -150,6 +132,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         if(movieTrailerResults !=null && movieReviewResults !=null){
             setData(movieTrailerResults,movieReviewResults);
         }
+
         return rootView;
 
     }
@@ -269,4 +252,29 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
             startActivity(webIntent);
         }
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_details, menu);
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+        //if (intent!= null) {
+        mShareActionProvider.setShareIntent(createShareMovieIntent());
+        //}
+    }
+
+    private Intent createShareMovieIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, intent.getStringExtra("title")+MOVIE_SHARE_HASHTAG);
+        return shareIntent;
+    }
+
 }

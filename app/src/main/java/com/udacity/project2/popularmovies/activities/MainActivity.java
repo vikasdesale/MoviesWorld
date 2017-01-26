@@ -12,7 +12,7 @@ import com.udacity.project2.popularmovies.fragment.MoviesFragment;
 /**
  * Created by Dell on 12/15/2016.
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

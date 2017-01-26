@@ -25,7 +25,6 @@
         </activity>
         <activity
             android:name=".activities.DetailsActivity"
-            android:theme="@style/MoviesTheme"
             android:label="@string/title_activity_details"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
