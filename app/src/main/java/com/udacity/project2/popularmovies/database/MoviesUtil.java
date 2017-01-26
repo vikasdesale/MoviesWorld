@@ -20,7 +20,7 @@ public class MoviesUtil {
 
     public static void insertData(Context context, ArrayList<Movie> movies) {
         Log.d("Vikas insert..........", "insert");
-        Cursor c;
+        Cursor c=null;
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movies.size());
         c = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
                 null, null, null, null);
@@ -73,6 +73,7 @@ public class MoviesUtil {
             Log.e("POPULAR MOVIES", "Error applying batch insert", e);
 
         } finally {
+
             c.close();
         }
 
@@ -108,7 +109,22 @@ public class MoviesUtil {
     }*/
 
     public static Cursor getCursor(Context context) {
-        return context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                null, null, null, null);
+        Cursor c=null;
+        try {
+
+            c = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                    null, null, null, null);
+        } catch (Exception e) {
+        }
+            return c;
+    }
+
+    public static void dataUpgrade(Context context) {
+        try {
+            context.getContentResolver().delete(MoviesProvider.MyMovies.CONTENT_URI,
+                    null, null);
+        }catch (Exception e){
+
+        }
     }
 }

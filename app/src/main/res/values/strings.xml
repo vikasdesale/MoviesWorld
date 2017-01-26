@@ -8,6 +8,8 @@
     <string name="rating">Rating:-</string>
     <string name="trailers">Trailers:-</string>
     <string name="reviews">Reviews:-</string>
+    <string name="action_favourite">Sort By Favourite</string>
+    <string name="action_share">Share</string>
 
 
 </resources>

@@ -53,6 +53,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
+import static com.udacity.project2.popularmovies.database.MoviesUtil.dataUpgrade;
 import static com.udacity.project2.popularmovies.database.MoviesUtil.getCursor;
 
 /**
@@ -80,7 +81,8 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     private RecyclerViewAdapter gridAdapter;
     private Cursor c;
     private int mPosition = GridView.INVALID_POSITION;
-
+    private GridLayoutManagerAutoFit layoutManager;
+    private  ScrollViewExt scroll;;
     public MoviesFragment() {
     }
 
@@ -88,9 +90,6 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (progressBar != null) {
-            progressBar.setVisibility(View.GONE);
-        }
 
     }
 
@@ -100,15 +99,17 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         unbinder = ButterKnife.bind(this, view);
         recyclerView.setHasFixedSize(true);
-        ScrollViewExt scroll;
-        GridLayoutManagerAutoFit layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
+
+        layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
         recyclerView.setLayoutManager(layoutManager);
         c = getCursor(getActivity());
-        if (c != null) {
-            progressBar.setVisibility(View.VISIBLE);
-            updateScreen(getCursor(getActivity()));
 
+        if (c.getCount()!=0) {
+            progressBar.setVisibility(View.GONE);
+            updateScreen(getCursor(getActivity()));
+        }else{
             progressBar2.setVisibility(View.GONE);
+            settings(Url.SORT_POPULAR_BASE_URL);
         }
         if (!NetworkUtil.isNetworkConnected(getActivity())) {
             progressBar.setVisibility(View.GONE);
@@ -128,7 +129,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         // When tablets rotate, the currently selected list item needs to be saved.
         // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
         // so check for that before storing.
-        if (mPosition != ListView.INVALID_POSITION) {
+        if (mPosition != GridView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
         super.onSaveInstanceState(outState);
@@ -143,8 +144,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             if (errorLayout != null || progressBar != null || contLayout != null || progressBar2 != null) {
                 errorLayout.setVisibility(View.GONE);
                 contLayout.setVisibility(View.VISIBLE);
-                progressBar2.setVisibility(View.VISIBLE);
-                //progressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
             }
 
             retro(type, pages);
@@ -176,7 +176,6 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                 TotalPages = response.body().getTotalPages();
 
                 MoviesUtil.insertData(getContext(), movieParcelable);
-
                 c = getCursor(getActivity());
                 updateScreen(c);
                 progressBar.setVisibility(View.GONE);
@@ -196,8 +195,9 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     // ButterKnife returns an Unbinder on the initial binding that has an unbind method to do this automatically.
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        c.close();
+        super.onDestroyView();
 
     }
 
@@ -205,16 +205,11 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         gridAdapter = new RecyclerViewAdapter(getActivity(), c);
         gridAdapter.setClickListener(this);
         recyclerView.setAdapter(gridAdapter);
-        if (progressBar != null) {
+        if (progressBar != null||progressBar2!=null) {
             progressBar.setVisibility(View.GONE);
+            progressBar2.setVisibility(View.GONE);
         }
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        c.close();
     }
 
     @Override
@@ -251,6 +246,10 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
+        if (id == R.id.action_favourite) {
+            settings(Url.SORT_POPULAR_BASE_URL);
+            return true;
+        }
         if (id == R.id.action_most_pop) {
             settings(Url.SORT_POPULAR_BASE_URL);
             return true;
@@ -319,7 +318,9 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        gridAdapter.swapCursor(cursor);
+        if(gridAdapter!=null) {
+            gridAdapter.swapCursor(cursor);
+        }
         if (mPosition != GridView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.

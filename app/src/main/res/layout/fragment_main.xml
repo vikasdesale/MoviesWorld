@@ -70,7 +70,6 @@
             android:id="@+id/progressbar2"
             style="@style/GNowProgressBar"
             android:layout_weight="0.1"
-            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="@dimen/overPadding"
             android:layout_gravity="top"

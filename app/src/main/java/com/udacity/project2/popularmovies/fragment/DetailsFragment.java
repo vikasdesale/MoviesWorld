@@ -6,10 +6,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -64,6 +69,26 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     ProgressBar progressBar;
     @BindView(R.id.progressContent)
     LinearLayout progressContent;
+    private ShareActionProvider mShareActionProvider;
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+        if ( != null) {
+            mShareActionProvider.setShareIntent(createShareMovieIntent());
+        }
+    }
+
+    private Intent createShareMovieIntent() {
+    }
+
     @BindView(R.id.contentMain)
     LinearLayout contentMain;
     private Unbinder unbinder;
@@ -190,7 +215,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
                 public void onResponse(Call<MovieTrailerResponse> call, Response<MovieTrailerResponse> response) {
                     movieTrailerResults = (ArrayList<MovieTrailerResults>) response.body().getMovieTrailerResults();
                     Log.d("id..........", "" + movieTrailerResults);
-                    getReviews(id,movieTrailerResults);
+                    getReviews(id, movieTrailerResults);
                 }
 
                 @Override
@@ -200,9 +225,6 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
                 }
             });
 
-        } else {
-
-            Toast.makeText(getContext(), "Hello Check Internet Connection and Try again...", Toast.LENGTH_SHORT);
         }
     }
     public void getReviews(String id, final ArrayList<MovieTrailerResults> movieTrailers){
@@ -229,9 +251,6 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
                 }
             });
 
-        }else {
-
-            Toast.makeText(getContext(),"Hello Check Internet Connection and Try again...",Toast.LENGTH_SHORT);
         }
 
     }
