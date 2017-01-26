@@ -84,6 +84,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     private int mPosition = GridView.INVALID_POSITION;
     private GridLayoutManagerAutoFit layoutManager;
     private  ScrollViewExt scroll;;
+    private static int  favflag=1;
     public MoviesFragment() {
     }
 
@@ -105,11 +106,13 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         recyclerView.setLayoutManager(layoutManager);
        //checking for movies in temporary database
         if (getCursor(getActivity()).getCount()!=0) {
-            c = getFavouriteCursor(getActivity());
+            favflag=0;
+            c = getCursor(getActivity());
             progressBar.setVisibility(View.GONE);
-            updateScreen(getCursor(getActivity()));
+            updateScreen(c);
         }else if(getFavouriteCursor(getActivity()).getCount()!=0)
-        {c = getFavouriteCursor(getActivity());
+        {  favflag=1;
+            c = getFavouriteCursor(getActivity());
             updateScreen(c);
 
         }else if(getCursor(getActivity()).getCount()==0&&getFavouriteCursor(getActivity()).getCount()==0) {
@@ -168,7 +171,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         Map<String, String> data = new HashMap<>();
         data.put("page", String.valueOf(page));
         data.put("api_key", BuildConfig.THE_MOVIE_DB_API_KEY);
-
+       favflag=0;
         Call<MovieResponse> call = null;
         if (type.equals(Url.SORT_BY_RATE_BASE_URL)) {
 
@@ -262,14 +265,17 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                 errorLayout.setVisibility(View.GONE);
                 contLayout.setVisibility(View.VISIBLE);
                 updateScreen(c);
+                favflag=1;
             }
             return true;
         }
         if (id == R.id.action_most_pop) {
+            favflag=0;
             settings(Url.SORT_POPULAR_BASE_URL);
             return true;
         }
         if (id == R.id.action_high_rated) {
+            favflag=0;
             settings(Url.SORT_BY_RATE_BASE_URL);
             return true;
         }
@@ -283,7 +289,8 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
 
         // if diff is zero, then the bottom has been reached
-        if (diff == 0) {
+        if (diff == 0 &&favflag==0) {
+
 
             if (NetworkUtil.isNetworkConnected(getActivity())) {
                 //METHOD 1 Retrofit:-
@@ -324,19 +331,22 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        c = getCursor(getActivity());
-        if(c.getCount()!=0){
+    //checking on rotate
+
+        if(getCursor(getContext()).getCount()!=0&&favflag==1){
         return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
                 null,
                 null,
                 null,
-                null);}else{
+                null);}
+        else if(getFavouriteCursor(getContext()).getCount()!=0&&favflag==0){
           return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
                   null,
                   null,
                   null,
                   null);
       }
+        return null;
     }
 
     @Override

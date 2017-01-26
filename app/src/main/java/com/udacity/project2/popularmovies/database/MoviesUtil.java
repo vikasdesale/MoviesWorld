@@ -84,7 +84,7 @@ public class MoviesUtil {
 
 
             context.getContentResolver().applyBatch(MoviesProvider.AUTHORITY, batchOperations);
-        } catch (RemoteException | OperationApplicationException e) {
+        } catch ( Exception e) {
             Log.e("POPULAR MOVIES", "Error applying batch insert", e);
 
         }
