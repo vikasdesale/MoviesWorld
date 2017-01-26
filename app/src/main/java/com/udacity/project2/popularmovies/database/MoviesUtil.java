@@ -24,7 +24,10 @@ public class MoviesUtil {
         int flag = 0;
         ContentProviderOperation.Builder builder=null;
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movies.size());
-       if(storeF.equals("favourite")){}
+       if(storeF.equals("favourite")){
+           c = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                   null, null, null, null);
+       }
         else {
            c = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
                    null, null, null, null);
@@ -33,9 +36,6 @@ public class MoviesUtil {
         try {
 
             for (Movie movie : movies) {
-                if(storeF.equals("favourite")) {
-                        flag=1;
-                }else {
 
                     boolean cursorCheck = c.moveToFirst();
                     if (cursorCheck) {
@@ -53,7 +53,7 @@ public class MoviesUtil {
                             }
                         }
                     }
-                }
+
 
                 if (flag == 1 || c.getCount() == 0)
                     if (movie.getPosterPath() != null && movie.getTitle() != null && movie.getId() != null && storeF.equals("favourite")) {
@@ -123,5 +123,34 @@ public class MoviesUtil {
         } catch (Exception e) {
         }
 
+    }
+
+    public static Boolean isFavouriteCursor(Context context,String title) {
+        Cursor c=null;
+        try {
+
+            c = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                    null, null, null, null);
+
+            boolean cursorCheck = c.moveToFirst();
+            if (cursorCheck) {
+                Log.d("Vikas", String.valueOf(c.getCount()));
+
+                while (c.moveToNext()) {
+                    if (title.equals(c.getString(c.getColumnIndex(ColumnsMovies.TITLE)))) {
+                        // Log.d("POPULAR MOVIES","Movie Title Same"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
+                        return true;
+                    } else {
+                            return  false;
+
+                             // Log.d("POPULAR MOVIES","Movie Title Difference"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
+
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+        }
+        return false;
     }
 }
