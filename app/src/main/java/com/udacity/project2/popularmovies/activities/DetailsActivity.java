@@ -2,13 +2,11 @@ package com.udacity.project2.popularmovies.activities;
 
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.udacity.project2.popularmovies.R;
-import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.fragment.DetailsFragment;
 
 /**
@@ -40,7 +38,6 @@ public class DetailsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

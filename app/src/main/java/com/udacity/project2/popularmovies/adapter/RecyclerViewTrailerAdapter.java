@@ -2,7 +2,6 @@ package com.udacity.project2.popularmovies.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,22 +20,20 @@ import butterknife.ButterKnife;
  * Created by Dell on 1/24/2017.
  */
 
-public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerViewTrailerAdapter.ViewHolder>{
+public class RecyclerViewTrailerAdapter extends RecyclerView.Adapter<RecyclerViewTrailerAdapter.ViewHolder> {
 
 
+    public ClickListener clickListener;
+    int i = 0;
     private Context mContext;
     private int resource;
     private ArrayList<MovieTrailerResults> parcel;
     private View view;
-    private LayoutInflater inflater;
-    public ClickListener clickListener;
-    private int mPreviousPosition = 0;
-    int i=0;
 
     public RecyclerViewTrailerAdapter(Context context, int resource, ArrayList<MovieTrailerResults> parcelable) {
-        this.resource=resource;
-        this.mContext=context;
-        this.parcel=parcelable;
+        this.resource = resource;
+        this.mContext = context;
+        this.parcel = parcelable;
 
     }
 
@@ -50,15 +47,16 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 //get the data item
-      MovieTrailerResults parcelable = parcel.get(position);
-        viewHolder.imageView.setImageResource (android.R.drawable.ic_media_play);
+        MovieTrailerResults parcelable = parcel.get(position);
+        viewHolder.imageView.setImageResource(android.R.drawable.ic_media_play);
         viewHolder.textView.setText(parcelable.getName());
     }
 
-    public void setClickListener(RecyclerViewTrailerAdapter.ClickListener clickListener){
+    public void setClickListener(RecyclerViewTrailerAdapter.ClickListener clickListener) {
 
-        this.clickListener=clickListener;
+        this.clickListener = clickListener;
     }
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -74,7 +72,7 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.trailerIcon)
         ImageView imageView;
         @BindView(R.id.trailerName)
@@ -87,15 +85,14 @@ public class RecyclerViewTrailerAdapter extends  RecyclerView.Adapter<RecyclerVi
             itemView.setOnClickListener(this);
 
         }
+
         @Override
         public void onClick(View v) {
 
-            //if(clickListener!=null){
-                Log.d("Vikas................","Item Clicked"+getPosition());
+            if (clickListener != null) {
 
-                clickListener.itemClicked(v,getPosition());
-                int d=getPosition();
-//            }
+                clickListener.itemClicked(v, getPosition());
+            }
         }
     }
 

@@ -19,22 +19,22 @@ import butterknife.ButterKnife;
  * Created by Dell on 1/24/2017.
  */
 
-public class RecyclerViewReviewAdapter extends RecyclerView.Adapter<RecyclerViewReviewAdapter.ViewHolder>{
+public class RecyclerViewReviewAdapter extends RecyclerView.Adapter<RecyclerViewReviewAdapter.ViewHolder> {
 
 
+    public ClickListener clickListener;
     private Context mContext;
     private int resource;
     private ArrayList<MovieReview> parcel;
     private View view;
     private LayoutInflater inflater;
-    public ClickListener clickListener;
     private int mPreviousPosition = 0;
 
 
     public RecyclerViewReviewAdapter(Context context, int resource, ArrayList<MovieReview> parcelable) {
-        this.resource=resource;
-        this.mContext=context;
-        this.parcel=parcelable;
+        this.resource = resource;
+        this.mContext = context;
+        this.parcel = parcelable;
 
     }
 
@@ -55,17 +55,18 @@ public class RecyclerViewReviewAdapter extends RecyclerView.Adapter<RecyclerView
         if (content != null && author != null) {
             viewHolder.author.setText("" + author);
             viewHolder.content.setText("" + content);
-        } else if (content != null && author == null){
+        } else if (content != null && author == null) {
             viewHolder.author.setText("No Author" + author);
             viewHolder.content.setText(" " + content);
         }
 
     }
 
-    public void setClickListener(ClickListener clickListener){
+    public void setClickListener(ClickListener clickListener) {
 
-        this.clickListener=clickListener;
+        this.clickListener = clickListener;
     }
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -76,7 +77,11 @@ public class RecyclerViewReviewAdapter extends RecyclerView.Adapter<RecyclerView
         return parcel.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public interface ClickListener {
+        public void itemClicked(View view, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.listItemReviewAuthor)
         TextView author;
         @BindView(R.id.listItemReviewContent)
@@ -89,15 +94,13 @@ public class RecyclerViewReviewAdapter extends RecyclerView.Adapter<RecyclerView
             itemView.setOnClickListener(this);
 
         }
+
         @Override
         public void onClick(View v) {
 
-            if(clickListener!=null){
-                clickListener.itemClicked(v,getPosition());
+            if (clickListener != null) {
+                clickListener.itemClicked(v, getPosition());
             }
         }
-    }
-    public  interface ClickListener{
-        public void itemClicked(View view,int position);
     }
 }

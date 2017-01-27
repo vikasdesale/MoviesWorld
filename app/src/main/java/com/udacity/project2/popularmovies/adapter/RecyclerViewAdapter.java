@@ -3,7 +3,6 @@ package com.udacity.project2.popularmovies.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.udacity.project2.popularmovies.R;
+import com.udacity.project2.popularmovies.anim.AnimationUtils;
 import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
 import com.udacity.project2.popularmovies.network.Url;
-import com.udacity.project2.popularmovies.anim.AnimationUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,14 +30,6 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
     private View view;
     private int mPreviousPosition = 0;
 
-
-    /*  public RecyclerViewAdapter(Context context, int resource, ArrayList<Movie> parcelable) {
-          this.resource=resource;
-          this.mContext=context;
-          this.parcel=parcelable;
-
-      }
-  */
     public RecyclerViewAdapter(Context context, Cursor cursor) {
         super(context, cursor);
         mContext = context;
@@ -53,44 +44,10 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
         return new ViewHolder(view);
     }
 
-
-
-    /*@Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        //get the data item
-        Movie parcelable = parcel.get(position);
-
-        String posterPath = parcelable.getPosterPath();
-        String title = parcelable.getTitle();
-        viewHolder.imageView.setImageDrawable (null);
-        if (posterPath != null || title != null) {
-           // viewHolder.imageView.setImageDrawable(null);
-            String posterUrl = Url.POSTER_URL + posterPath;
-            Picasso.with(mContext).load(posterUrl)
-                    .into(viewHolder.imageView);
-            viewHolder.textView.setText("" + title);
-        } else {
-            viewHolder.imageView.setImageDrawable(null);
-            viewHolder.textView.setText("No Title");
-            viewHolder.imageView.setImageResource(R.drawable.placeholder);
-        }
-        if (position > mPreviousPosition) {
-            AnimationUtils.animateSunblind(viewHolder, true);
-
-        } else {
-            AnimationUtils.animateSunblind(viewHolder, false);
-
-        }
-        mPreviousPosition = position;
-
-    }
-*/
-
     public void setClickListener(ClickListener clickListener) {
 
         this.clickListener = clickListener;
     }
-
 
 
     @Override
@@ -102,9 +59,6 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
         //DatabaseUtils.dumpCursor(cursor);
         int viewType = getItemViewType(cursor.getPosition());
-        Log.d("Cursor..............", "" + cursor);
-
-        Log.d("vikas..............", "" + viewHolder);
         String posterPath = cursor.getString(cursor.getColumnIndex(ColumnsMovies.POSTER_PATH));
         String title = cursor.getString(cursor.getColumnIndex(ColumnsMovies.TITLE));
         viewHolder.imageView.setImageDrawable(null);
@@ -114,9 +68,9 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
 
             //Got Advantages why to use Glide over picasso that's why replaced picasso.
             Glide.with(mContext).load(posterUrl)
-                    .thumbnail( 0.1f )
-                    // read original from cache (if present) otherwise download it and decode it
+                    .thumbnail(0.1f)
                     .placeholder(R.drawable.placeholder)
+                    // read original from cache (if present) otherwise download it and decode it
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .into(viewHolder.imageView);
             viewHolder.textView.setText("" + title);

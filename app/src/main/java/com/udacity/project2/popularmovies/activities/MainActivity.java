@@ -1,13 +1,9 @@
 package com.udacity.project2.popularmovies.activities;
 
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Window;
+import android.support.v7.app.AppCompatActivity;
 
 import com.udacity.project2.popularmovies.R;
-import com.udacity.project2.popularmovies.database.MoviesUtil;
 import com.udacity.project2.popularmovies.fragment.MoviesFragment;
 
 /**

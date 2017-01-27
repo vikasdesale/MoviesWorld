@@ -102,11 +102,13 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         layoutManager = new GridLayoutManager(getActivity(), 3);
         recyclerView.setLayoutManager(layoutManager);
         //checking for movies in temporary database
-        if (getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                null, null, null, null).getCount()!=0) {
+        load1=getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                null, null, null, null);
+        load2=getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                null, null, null, null);
+        if (load1.getCount()!=0) {
                allMovieWindow();
-            }else if(getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                null, null, null, null).getCount()!=0)
+            }else if(load2.getCount()!=0)
             {  openFavourite();
         }else if(getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
                 null, null, null, null).getCount()==0&&
@@ -209,10 +211,10 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             updateScreen(allm);
 
         }catch (Exception e){}finally {
-//            if (allm != null || !allm.isClosed()) {
-  //              allm.close();
-    //        }
-        }
+  //   if (allm != null || !allm.isClosed()) {
+    //            allm.close();
+      //      }
+            }
     }
 
     // When binding a fragment in onCreateView, set the views to null in onDestroyView.
@@ -228,6 +230,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     public void updateScreen(Cursor c) {
         gridAdapter = new RecyclerViewAdapter(getActivity(), c);
         gridAdapter.setClickListener(this);
+
         if(recyclerView!=null)
         recyclerView.setAdapter(gridAdapter);
         if (progressBar != null||progressBar2!=null) {
@@ -306,6 +309,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     }
 
     private void openFavourite() {
+
         Cursor c2 = null;
         try {
             c2 = getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
@@ -321,9 +325,9 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                 favflag = 1;
             }
         }finally {
-            //if (c2 != null || !c2.isClosed()) {                   if comment is out not shows movies
-              //  c2.close();
-           // }
+          //  if (c2 != null || !c2.isClosed()) {                  // if comment is out not shows movies
+            //    c2.close();
+           //}
         }
     }
     @Override
@@ -387,18 +391,21 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                         null,
                         null,
                         null);
-            } else if (load2.getCount() != 0 && favflag == 1) {
-                return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                        null,
-                        null,
-                        null,
-                        null);
+            } else {
+                if (load2.getCount() != 0 && favflag == 1) {
+                    return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                            null,
+                            null,
+                            null,
+                            null);
+
+                }
             }
         }finally {
-            if(!load1.isClosed()||load1!=null)
-                load1.close();
-            if(!load2.isClosed()||load2!=null)
-                load2.close();
+          //  if(!load1.isClosed()||load1!=null)
+            //    load1.close();
+           // if(!load2.isClosed()||load2!=null)
+             //   load2.close();
         }
         return null;
     }

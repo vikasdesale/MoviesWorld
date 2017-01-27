@@ -2,11 +2,8 @@ package com.udacity.project2.popularmovies.database;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
 import com.udacity.project2.popularmovies.parcelable.Movie;
@@ -20,25 +17,23 @@ import java.util.ArrayList;
 public class MoviesUtil {
 
 
-    public static int insertData(Context context, ArrayList<Movie> movies,String storeF) {
-       Cursor c = null;
-       Log.d("Vikas insert..........", "insert");
+    public static int insertData(Context context, ArrayList<Movie> movies, String storeF) {
+        Cursor c = null;
         int flag = 0;
         ContentProviderOperation.Builder builder = null;
         try {
             ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(movies.size());
             if (storeF.equals("favourite")) {
-               c=context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                       null, null, null, null);
+                c = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                        null, null, null, null);
             } else {
 
-              c=  context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                c = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
                         null, null, null, null);
             }
 
 
             for (Movie movie : movies) {
-
 
 
                 while (c.moveToNext()) {
@@ -87,42 +82,18 @@ public class MoviesUtil {
             Log.e("POPULAR MOVIES", "Error applying batch insert", e);
 
         } finally {
-          //  if (c != null||!c.isClosed()) {
+            //  if (c != null||!c.isClosed()) {
             //    c.close();
             //}
 
         }
-        if(flag==0) {
+        if (flag == 0) {
             return 1;
-        }else{
+        } else {
             return 0;
         }
     }
 
-  /*  public static Cursor getCursor(Context context) {
-        Cursor  c=null;
-        try {
-
-            c = context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                    null, null, null, null);
-            return c;
-        } catch (Exception e) {
-
-        }
-        return c;
-    }
-
-    public static Cursor getFavouriteCursor(Context context) {
-      Cursor  c2=null;
-        try {
-
-            c2 = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                    null, null, null, null);
-        } catch (Exception e) {
-        }
-
-        return c2;
-    }*/
     public static void CacheDelete(Context context) {
 
         try {
@@ -133,50 +104,40 @@ public class MoviesUtil {
         }
 
     }
-    public static void FavouriteDelete(Context context,String title) {
+
+    public static void FavouriteDelete(Context context, String title) {
 
         try {
 
             context.getContentResolver().delete(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                    ColumnsMovies.TITLE + "=?" , new String[] {title});
+                    ColumnsMovies.TITLE + "=?", new String[]{title});
         } catch (Exception e) {
         }
 
     }
-    public static int CheckisFavourite(Context context,String title) {
-        Log.d("Vikas cekc..........", "check");
-        Cursor   me = null;
-        int flag = 0;
 
+    public static int CheckisFavourite(Context context, String title) {
+        Cursor me = null;
+        int flag = 0;
         try {
             me = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                    null, null, null, null);
-            Log.d("Vikas", String.valueOf(me.getCount()));
-         
-                while (me.moveToNext()) {
-                    if (title.equals(me.getString(me.getColumnIndex(ColumnsMovies.TITLE)))) {
-                        // Log.d("POPULAR MOVIES","Movie Title Same"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
-                        flag = 0;
-                        break;
-                    } else {
-                        flag = 1;
-                        // Log.d("POPULAR MOVIES","Movie Title Difference"+movie.getTitle().toString()+" ="+c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
-
-                    }
-
+                    null, ColumnsMovies.TITLE + "=?", new String[]{title}, null);
+                if (title.equals(me.getString(me.getColumnIndex(ColumnsMovies.TITLE)))) {
+                    flag = 0;
+                } else {
+                    flag = 1;
                 }
 
-            
-        }catch (Exception e) {
+        } catch (Exception e) {
 
-        }finally {
+        } finally {
             if (me != null || !me.isClosed()) {
-                me.close();
+               me.close();
             }
         }
-        if(flag==1||me.getCount() == 0) {
+        if (flag == 1 || me.getCount() == 0) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }

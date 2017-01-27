@@ -6,7 +6,6 @@ import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
 
 import net.simonvt.schematic.annotation.ContentProvider;
 import net.simonvt.schematic.annotation.ContentUri;
-import net.simonvt.schematic.annotation.InexactContentUri;
 import net.simonvt.schematic.annotation.TableEndpoint;
 
 /**
@@ -40,7 +39,7 @@ public class MoviesProvider {
                 defaultSort = ColumnsMovies._ID + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.MY_MOVIES);
 
-        }
+    }
 
     @TableEndpoint(table = MoviesDatabase.FAVOURITE_MOVIES)
     public static class FavouriteMovies {
