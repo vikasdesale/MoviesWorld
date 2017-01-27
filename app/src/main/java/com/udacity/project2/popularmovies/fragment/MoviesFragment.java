@@ -82,6 +82,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     private GridLayoutManager layoutManager;
     private  ScrollViewExt scroll;;
     private static int  favflag=1;
+    Cursor load1,load2;
     public MoviesFragment() {
     }
 
@@ -208,9 +209,9 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             updateScreen(allm);
 
         }catch (Exception e){}finally {
-            if (allm != null || !allm.isClosed()) {
-                allm.close();
-            }
+//            if (allm != null || !allm.isClosed()) {
+  //              allm.close();
+    //        }
         }
     }
 
@@ -239,6 +240,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     @Override
     public void onDetach() {
         super.onDetach();
+
     }
 
     @Override
@@ -246,9 +248,14 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     {
         Cursor onClick = null;
         try {
-            onClick = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                    null, null, null, null);
-        boolean cursor = onClick.moveToPosition(position);
+            if(favflag==1){
+                onClick = getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                        null, null, null, null);
+            }else {
+                onClick = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                        null, null, null, null);
+            }
+                boolean cursor = onClick.moveToPosition(position);
         if (cursor) {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             intent.putExtra("id",onClick.getString(onClick.getColumnIndex(ColumnsMovies.KEY)));
@@ -259,10 +266,11 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             intent.putExtra("vote", onClick.getDouble(onClick.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
             startActivity(intent);
         }
-        }catch (Exception e){}finally {
-            if (onClick != null || !onClick.isClosed()) {
-                onClick.close();
-            }
+        }catch (Exception e){}
+        finally {
+            //if (onClick != null || !onClick.isClosed()) {
+              //  onClick.close();                                 not gives output if not commented out
+           // }
         }
     }
 
@@ -302,20 +310,20 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         try {
             c2 = getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
                     null, null, null, null);
-           // CacheDelete(getContext());
+            CacheDelete(getContext());
             if (c2.getCount() == 0) {
-                Toast.makeText(getContext(), "NO Favourite Movies Add", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "No Favourite Movies available please add!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getContext(), "Favourite Movies", Toast.LENGTH_SHORT).show();
-                errorLayout.setVisibility(View.GONE);
+                 errorLayout.setVisibility(View.GONE);
                  contLayout.setVisibility(View.VISIBLE);
                 updateScreen(c2);
                 favflag = 1;
             }
         }finally {
-            if (c2 != null || !c2.isClosed()) {
-                c2.close();
-            }
+            //if (c2 != null || !c2.isClosed()) {                   if comment is out not shows movies
+              //  c2.close();
+           // }
         }
     }
     @Override
@@ -368,22 +376,31 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         //checking on rotate
-
-       // if (getCursor(getContext()).getCount() != 0 ) {
-            return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null);
-        //} else if (getFavouriteCursor(getContext()).getCount() != 0 && favflag == 0) {
-          //  return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-            //        null,
-              //      null,
-                //    null,
-                  //  null);
-        //} else {
-          //  return null;
-     //   }
+        try {
+            load1 = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                    null, null, null, null);
+            load2 = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                    null, null, null, null);
+            if (load1.getCount() != 0 && favflag==0) {
+                return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null);
+            } else if (load2.getCount() != 0 && favflag == 1) {
+                return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                        null,
+                        null,
+                        null,
+                        null);
+            }
+        }finally {
+            if(!load1.isClosed()||load1!=null)
+                load1.close();
+            if(!load2.isClosed()||load2!=null)
+                load2.close();
+        }
+        return null;
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -395,6 +412,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             // to, do so now.
             recyclerView.smoothScrollToPosition(mPosition);
         }
+
 
     }
 

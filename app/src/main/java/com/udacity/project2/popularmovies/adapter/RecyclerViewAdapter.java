@@ -10,15 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.interfaces.ColumnsMovies;
 import com.udacity.project2.popularmovies.network.Url;
 import com.udacity.project2.popularmovies.anim.AnimationUtils;
-import com.udacity.project2.popularmovies.parcelable.Movie;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,7 +72,7 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
         } else {
             viewHolder.imageView.setImageDrawable(null);
             viewHolder.textView.setText("No Title");
-            viewHolder.imageView.setImageResource(R.drawable.v1);
+            viewHolder.imageView.setImageResource(R.drawable.placeholder);
         }
         if (position > mPreviousPosition) {
             AnimationUtils.animateSunblind(viewHolder, true);
@@ -119,14 +116,14 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
             Glide.with(mContext).load(posterUrl)
                     .thumbnail( 0.1f )
                     // read original from cache (if present) otherwise download it and decode it
-                    .placeholder(R.drawable.v1)
+                    .placeholder(R.drawable.placeholder)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .into(viewHolder.imageView);
             viewHolder.textView.setText("" + title);
         } else {
             viewHolder.imageView.setImageDrawable(null);
             viewHolder.textView.setText("No Title");
-            viewHolder.imageView.setImageResource(R.drawable.v1);
+            viewHolder.imageView.setImageResource(R.drawable.placeholder);
         }
         if (viewType > mPreviousPosition) {
             AnimationUtils.animateSunblind(viewHolder, true);

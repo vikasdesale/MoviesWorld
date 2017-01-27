@@ -50,6 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
+import static com.udacity.project2.popularmovies.database.MoviesUtil.CacheDelete;
 import static com.udacity.project2.popularmovies.database.MoviesUtil.CheckisFavourite;
 import static com.udacity.project2.popularmovies.database.MoviesUtil.FavouriteDelete;
 
@@ -83,6 +84,10 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     RecyclerView movieTrailerView;
     @BindView(R.id.myFavourite)
     ImageView myFavourite;
+    @BindView(R.id.error)
+    LinearLayout errorLayout;
+    @BindView(R.id.content)
+    LinearLayout contLayout;
     String mtitle;
     String mPosterPath;
     String mPosterUrl;
@@ -105,7 +110,10 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+            //METHOD 1 Retrofit:-
         if (NetworkUtil.isNetworkConnected(getActivity())) {
+        //This is because internet connection goes down between activities
+
             if (savedInstanceState == null || !savedInstanceState.containsKey("trailers") ||
                     savedInstanceState.getParcelableArrayList("trailers") == null||
                     !savedInstanceState.containsKey("reviews") ||
@@ -116,10 +124,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
                 movieTrailerResults = savedInstanceState.getParcelableArrayList("trailers");
                 movieReviewResults = savedInstanceState.getParcelableArrayList("reviews");
             }
-
        }
-
-
 
     }
 
@@ -143,6 +148,22 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         if(movieTrailerResults !=null && movieReviewResults !=null){
             setData(movieTrailerResults,movieReviewResults);
         }
+
+        if (NetworkUtil.isNetworkConnected(getActivity())) {
+            //This is because internet connection goes down between activities
+            if (errorLayout != null || progressBar != null || contLayout != null) {
+                errorLayout.setVisibility(View.GONE);
+                contLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        }else {
+                if (errorLayout != null || contLayout != null||progressBar!=null) {
+                    progressBar.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
+                    contLayout.setVisibility(View.GONE);
+
+                }
+            }
 
         return rootView;
 

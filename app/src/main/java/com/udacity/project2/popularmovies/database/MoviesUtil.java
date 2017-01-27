@@ -87,9 +87,9 @@ public class MoviesUtil {
             Log.e("POPULAR MOVIES", "Error applying batch insert", e);
 
         } finally {
-            if (c != null||!c.isClosed()) {
-                c.close();
-            }
+          //  if (c != null||!c.isClosed()) {
+            //    c.close();
+            //}
 
         }
         if(flag==0) {
