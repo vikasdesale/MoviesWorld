@@ -98,6 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/rdate"
                         app:srcCompat="@android:drawable/btn_star_big_off"
+                        android:clickable="true"
                         android:id="@+id/myFavourite" />
 
                 </LinearLayout>

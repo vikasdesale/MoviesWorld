@@ -104,7 +104,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
         layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
         recyclerView.setLayoutManager(layoutManager);
-       //checking for movies in temporary database
+        //checking for movies in temporary database
         if (getCursor(getActivity()).getCount()!=0) {
             favflag=0;
             c = getCursor(getActivity());
@@ -171,7 +171,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         Map<String, String> data = new HashMap<>();
         data.put("page", String.valueOf(page));
         data.put("api_key", BuildConfig.THE_MOVIE_DB_API_KEY);
-       favflag=0;
+        favflag=0;
         Call<MovieResponse> call = null;
         if (type.equals(Url.SORT_BY_RATE_BASE_URL)) {
 
@@ -306,7 +306,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                         progressBar.setVisibility(View.GONE);
                     }
                     progressBar2.setVisibility(View.VISIBLE);
-                      //                    Log.d("POPULAR MOVIES","Pages..........." + pages);
+                    //                    Log.d("POPULAR MOVIES","Pages..........." + pages);
                     Log.d("POPULAR MOVIES","Total Pages..........." + TotalPages);
 
                     retro(Url.SORT_POPULAR_BASE_URL, pages);
@@ -331,21 +331,21 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-    //checking on rotate
+        //checking on rotate
 
         if(getCursor(getContext()).getCount()!=0&&favflag==1){
-        return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);}
+            return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null);}
         else if(getFavouriteCursor(getContext()).getCount()!=0&&favflag==0){
-          return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                  null,
-                  null,
-                  null,
-                  null);
-      }
+            return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
         return null;
     }
 

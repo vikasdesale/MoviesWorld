@@ -3,6 +3,7 @@ package com.udacity.project2.popularmovies.fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -294,27 +295,31 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
 
     @Override
     public void onClick(View view) {
-        myFavourite.setImageResource(android.R.drawable.btn_star_big_on);
+        int n=0;
+        try {
+            Movie movie;
+            movie = new Movie(mPosterPath,
+                    false,
+                    mOverview,
+                    mDate,
+                    null,
+                    Integer.parseInt(id),
+                    null,
+                    null,
+                    mtitle,
+                    null,
+                    0.0,
+                    0,
+                    false,
+                    mRating);
 
-       Movie movie;
-        movie = new Movie(mPosterPath,
-                                  false,
-                mOverview,
-                mDate,
-                null,
-                Integer.parseInt(id),
-                null,
-                null,
-                mtitle,
-                null,
-                0.0,
-                0,
-                false,
-                mRating);
-
-
-        ArrayList<Movie> m=new ArrayList<Movie>();
-        m.add(0,movie);
-        MoviesUtil.insertData(getContext(),m,"favourite");
+            ArrayList<Movie> m=new ArrayList<Movie>();
+            m.add(0, movie);
+            n = MoviesUtil.insertData(getContext(), m, "favourite");
+        }catch (Exception e){}
+            if(n==1){
+            myFavourite.setImageResource(android.R.drawable.btn_star_big_on);
+        Toast.makeText(getContext(), "Movie Already Present", Toast.LENGTH_SHORT).show();
+    }
     }
 }
