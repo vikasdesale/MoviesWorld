@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -35,7 +35,6 @@ import com.udacity.project2.popularmovies.activities.DetailsActivity;
 import com.udacity.project2.popularmovies.network.Url;
 import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
-import com.udacity.project2.popularmovies.layout.GridLayoutManagerAutoFit;
 import com.udacity.project2.popularmovies.network.NetworkUtil;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
 import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
@@ -54,8 +53,7 @@ import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
 import static com.udacity.project2.popularmovies.database.MoviesUtil.CacheDelete;
-import static com.udacity.project2.popularmovies.database.MoviesUtil.getCursor;
-import static com.udacity.project2.popularmovies.database.MoviesUtil.getFavouriteCursor;
+
 
 /**
  * Created by Dell on 12/15/2016.
@@ -80,9 +78,8 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     private Unbinder unbinder;
     private ArrayList<Movie> movieParcelable;
     private RecyclerViewAdapter gridAdapter;
-    private Cursor c;
     private int mPosition = GridView.INVALID_POSITION;
-    private GridLayoutManagerAutoFit layoutManager;
+    private GridLayoutManager layoutManager;
     private  ScrollViewExt scroll;;
     private static int  favflag=1;
     public MoviesFragment() {
@@ -101,21 +98,19 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         unbinder = ButterKnife.bind(this, view);
         recyclerView.setHasFixedSize(true);
-
-        layoutManager = new GridLayoutManagerAutoFit(getContext(), 160);
+        layoutManager = new GridLayoutManager(getActivity(), 3);
         recyclerView.setLayoutManager(layoutManager);
         //checking for movies in temporary database
-        if (getCursor(getActivity()).getCount()!=0) {
-            favflag=0;
-            c = getCursor(getActivity());
-            progressBar.setVisibility(View.GONE);
-            updateScreen(c);
-        }else if(getFavouriteCursor(getActivity()).getCount()!=0)
-        {  favflag=1;
-            c = getFavouriteCursor(getActivity());
-            updateScreen(c);
-
-        }else if(getCursor(getActivity()).getCount()==0&&getFavouriteCursor(getActivity()).getCount()==0) {
+        if (getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                null, null, null, null).getCount()!=0) {
+               allMovieWindow();
+            }else if(getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                null, null, null, null).getCount()!=0)
+            {  openFavourite();
+        }else if(getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                null, null, null, null).getCount()==0&&
+                getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                        null, null, null, null).getCount()==0) {
             progressBar2.setVisibility(View.GONE);
             if (!NetworkUtil.isNetworkConnected(getActivity())) {
                 progressBar.setVisibility(View.GONE);
@@ -187,9 +182,10 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                 TotalPages = response.body().getTotalPages();
 
                 MoviesUtil.insertData(getContext(), movieParcelable, "no");
-                c = getCursor(getActivity());
-                updateScreen(c);
+                 allMovieWindow();
+                if(progressBar!=null)
                 progressBar.setVisibility(View.GONE);
+                if(progressBar2!=null)
                 progressBar2.setVisibility(View.GONE);
             }
 
@@ -201,20 +197,37 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         });
     }
 
+    private void allMovieWindow() {
+        favflag = 0;
+        Cursor allm=null;
+        try {
+            allm = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                    null, null, null, null);
+            if (progressBar != null)
+                progressBar.setVisibility(View.GONE);
+            updateScreen(allm);
+
+        }catch (Exception e){}finally {
+            if (allm != null || !allm.isClosed()) {
+                allm.close();
+            }
+        }
+    }
 
     // When binding a fragment in onCreateView, set the views to null in onDestroyView.
     // ButterKnife returns an Unbinder on the initial binding that has an unbind method to do this automatically.
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        c.close();
         super.onDestroyView();
+
 
     }
 
     public void updateScreen(Cursor c) {
         gridAdapter = new RecyclerViewAdapter(getActivity(), c);
         gridAdapter.setClickListener(this);
+        if(recyclerView!=null)
         recyclerView.setAdapter(gridAdapter);
         if (progressBar != null||progressBar2!=null) {
             progressBar.setVisibility(View.GONE);
@@ -226,21 +239,30 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     @Override
     public void onDetach() {
         super.onDetach();
-        c.close();
     }
 
     @Override
-    public void itemClicked(View view, int position) {
-        boolean cursor = c.moveToPosition(position);
+    public void itemClicked(View view, int position)
+    {
+        Cursor onClick = null;
+        try {
+            onClick = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                    null, null, null, null);
+        boolean cursor = onClick.moveToPosition(position);
         if (cursor) {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
-            intent.putExtra("id",c.getString(c.getColumnIndex(ColumnsMovies.KEY)));
-            intent.putExtra("poster", c.getString(c.getColumnIndex(ColumnsMovies.POSTER_PATH)));
-            intent.putExtra("title", c.getString(c.getColumnIndex(ColumnsMovies.TITLE)));
-            intent.putExtra("overview", c.getString(c.getColumnIndex(ColumnsMovies.OVERVIEW)));
-            intent.putExtra("date", c.getString(c.getColumnIndex(ColumnsMovies.RELEASE_DATE)));
-            intent.putExtra("vote", c.getDouble(c.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
+            intent.putExtra("id",onClick.getString(onClick.getColumnIndex(ColumnsMovies.KEY)));
+            intent.putExtra("poster", onClick.getString(onClick.getColumnIndex(ColumnsMovies.POSTER_PATH)));
+            intent.putExtra("title", onClick.getString(onClick.getColumnIndex(ColumnsMovies.TITLE)));
+            intent.putExtra("overview", onClick.getString(onClick.getColumnIndex(ColumnsMovies.OVERVIEW)));
+            intent.putExtra("date", onClick.getString(onClick.getColumnIndex(ColumnsMovies.RELEASE_DATE)));
+            intent.putExtra("vote", onClick.getDouble(onClick.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
             startActivity(intent);
+        }
+        }catch (Exception e){}finally {
+            if (onClick != null || !onClick.isClosed()) {
+                onClick.close();
+            }
         }
     }
 
@@ -256,32 +278,46 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
         if (id == R.id.action_favourite) {
-            c=getFavouriteCursor(getActivity());
-            CacheDelete(getContext());
-            if(c.getCount()==0){
-                Toast.makeText(getContext(),"NO Favourite Movies Add",Toast.LENGTH_SHORT).show();;
-            }else {
-                errorLayout.setVisibility(View.GONE);
-                contLayout.setVisibility(View.VISIBLE);
-                updateScreen(c);
-                favflag=1;
-            }
+                     openFavourite();
             return true;
         }
         if (id == R.id.action_most_pop) {
-            favflag=0;
+            favflag=0;pages=1;
             settings(Url.SORT_POPULAR_BASE_URL);
             return true;
         }
         if (id == R.id.action_high_rated) {
             favflag=0;
+            pages=1;
             settings(Url.SORT_BY_RATE_BASE_URL);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void openFavourite() {
+        Cursor c2 = null;
+        try {
+            c2 = getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                    null, null, null, null);
+           // CacheDelete(getContext());
+            if (c2.getCount() == 0) {
+                Toast.makeText(getContext(), "NO Favourite Movies Add", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Favourite Movies", Toast.LENGTH_SHORT).show();
+                errorLayout.setVisibility(View.GONE);
+                 contLayout.setVisibility(View.VISIBLE);
+                updateScreen(c2);
+                favflag = 1;
+            }
+        }finally {
+            if (c2 != null || !c2.isClosed()) {
+                c2.close();
+            }
+        }
+    }
     @Override
     public void onScrollChanged(ScrollViewExt scrollView, int x, int y, int oldx, int oldy) {
         // We take the last son in the scrollview
@@ -333,22 +369,22 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         //checking on rotate
 
-        if(getCursor(getContext()).getCount()!=0&&favflag==1){
+       // if (getCursor(getContext()).getCount() != 0 ) {
             return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
                     null,
                     null,
                     null,
-                    null);}
-        else if(getFavouriteCursor(getContext()).getCount()!=0&&favflag==0){
-            return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                    null,
-                    null,
-                    null,
                     null);
-        }
-        return null;
+        //} else if (getFavouriteCursor(getContext()).getCount() != 0 && favflag == 0) {
+          //  return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+            //        null,
+              //      null,
+                //    null,
+                  //  null);
+        //} else {
+          //  return null;
+     //   }
     }
-
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if(gridAdapter!=null) {

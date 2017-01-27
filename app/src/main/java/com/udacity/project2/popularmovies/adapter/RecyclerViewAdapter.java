@@ -94,6 +94,8 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
         this.clickListener = clickListener;
     }
 
+
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -115,6 +117,10 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
 
             //Got Advantages why to use Glide over picasso that's why replaced picasso.
             Glide.with(mContext).load(posterUrl)
+                    .thumbnail( 0.1f )
+                    // read original from cache (if present) otherwise download it and decode it
+                    .placeholder(R.drawable.v1)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .into(viewHolder.imageView);
             viewHolder.textView.setText("" + title);
         } else {
