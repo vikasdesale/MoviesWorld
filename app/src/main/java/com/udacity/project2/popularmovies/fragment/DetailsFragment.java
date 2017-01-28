@@ -337,7 +337,8 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
 
                 ArrayList<Movie> m = new ArrayList<Movie>();
                 m.add(0, movie);
-                MoviesUtil.insertData(getContext(), m, "favourite");
+                MoviesUtil moviesUtil=new MoviesUtil();
+                moviesUtil.insertData(getContext(), m, "favourite");
                 myFavourite.setImageResource(android.R.drawable.btn_star_big_on);
                 Toast.makeText(getContext(), "Movie Inserted in Favourite", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {

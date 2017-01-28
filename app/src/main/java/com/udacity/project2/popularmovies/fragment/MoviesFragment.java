@@ -58,7 +58,7 @@ import static com.udacity.project2.popularmovies.database.MoviesUtil.CacheDelete
 /**
  * Created by Dell on 12/15/2016.
  */
-public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>, RecyclerViewAdapter.ClickListener, ScrollViewListener {
+public class MoviesFragment extends Fragment implements RecyclerViewAdapter.ClickListener, ScrollViewListener {
 
 
     private static final int MOVIE_LOADER = 0;
@@ -82,13 +82,17 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
     private GridLayoutManager layoutManager;
     private  ScrollViewExt scroll;;
     private static int  favflag=1;
-    Cursor load1,load2;
+    MoviesUtil movies;
+    private MoviesLoader mMoviesLoader;
+
     public MoviesFragment() {
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        movies=new MoviesUtil();
+        setRetainInstance(true);
         setHasOptionsMenu(true);
 
     }
@@ -101,19 +105,19 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         recyclerView.setHasFixedSize(true);
         layoutManager = new GridLayoutManager(getActivity(), 3);
         recyclerView.setLayoutManager(layoutManager);
+        MoviesCheck();
+        scroll = (ScrollViewExt) view.findViewById(R.id.scroll);
+        scroll.setScrollViewListener(this);
+        return view;
+    }
+
+    private void MoviesCheck() {
         //checking for movies in temporary database
-        load1=getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                null, null, null, null);
-        load2=getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                null, null, null, null);
-        if (load1.getCount()!=0) {
-               allMovieWindow();
-            }else if(load2.getCount()!=0)
-            {  openFavourite();
-        }else if(getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                null, null, null, null).getCount()==0&&
-                getActivity().getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                        null, null, null, null).getCount()==0) {
+        if (movies.getAllMoviesCount(getActivity())!=0) {
+            allMovieWindow();
+        } else if (movies.getFavMoviesCount(getActivity())!=0) {
+            openFavourite();
+        } else if (movies.getAllMoviesCount(getActivity())==0 &&movies.getAllMoviesCount(getActivity())==0) {
             progressBar2.setVisibility(View.GONE);
             if (!NetworkUtil.isNetworkConnected(getActivity())) {
                 progressBar.setVisibility(View.GONE);
@@ -124,19 +128,18 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
                 settings(Url.SORT_POPULAR_BASE_URL);
             }
         }
+    }
 
 
-        scroll = (ScrollViewExt) view.findViewById(R.id.scroll);
-        scroll.setScrollViewListener(this);
-
-        return view;
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMoviesLoader != null)
+            mMoviesLoader.restartLoader();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // When tablets rotate, the currently selected list item needs to be saved.
-        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
-        // so check for that before storing.
         if (mPosition != GridView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
@@ -148,7 +151,6 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         if (NetworkUtil.isNetworkConnected(getActivity())) {
             //METHOD 1 Retrofit:-
             CacheDelete(getContext());
-
             //This is because internet connection goes down between activities
             if (errorLayout != null || progressBar != null || contLayout != null || progressBar2 != null) {
                 errorLayout.setVisibility(View.GONE);
@@ -183,8 +185,8 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                 movieParcelable = (ArrayList<Movie>) response.body().getResults();
                 TotalPages = response.body().getTotalPages();
-
-                MoviesUtil.insertData(getContext(), movieParcelable, "no");
+                
+                movies.insertData(getContext(), movieParcelable, "no");
                  allMovieWindow();
                 if(progressBar!=null)
                 progressBar.setVisibility(View.GONE);
@@ -211,9 +213,9 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             updateScreen(allm);
 
         }catch (Exception e){}finally {
-  //   if (allm != null || !allm.isClosed()) {
-    //            allm.close();
-      //      }
+             // if (allm != null || !allm.isClosed()) {
+               //        allm.close();
+            //}
             }
     }
 
@@ -229,10 +231,16 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     public void updateScreen(Cursor c) {
         gridAdapter = new RecyclerViewAdapter(getActivity(), c);
+        mMoviesLoader = mMoviesLoader.newInstance(favflag,this, gridAdapter);
+        gridAdapter = new RecyclerViewAdapter(getActivity(), c);
+        mMoviesLoader.initLoader();
         gridAdapter.setClickListener(this);
 
         if(recyclerView!=null)
         recyclerView.setAdapter(gridAdapter);
+        if (mMoviesLoader != null)
+            mMoviesLoader.restartLoader();
+
         if (progressBar != null||progressBar2!=null) {
             progressBar.setVisibility(View.GONE);
             progressBar2.setVisibility(View.GONE);
@@ -271,9 +279,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
         }
         }catch (Exception e){}
         finally {
-            //if (onClick != null || !onClick.isClosed()) {
-              //  onClick.close();                                 not gives output if not commented out
-           // }
+           // if (onClick != null || !onClick.isClosed()) {onClick.close();}
         }
     }
 
@@ -326,7 +332,7 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
             }
         }finally {
           //  if (c2 != null || !c2.isClosed()) {                  // if comment is out not shows movies
-            //    c2.close();
+                //c2.close();
            //}
         }
     }
@@ -373,60 +379,10 @@ public class MoviesFragment extends Fragment implements LoaderCallbacks<Cursor>,
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+       //getLoaderManager().initLoader(MOVIE_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        //checking on rotate
-        try {
-            load1 = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                    null, null, null, null);
-            load2 = getActivity().getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
-                    null, null, null, null);
-            if (load1.getCount() != 0 && favflag==0) {
-                return new CursorLoader(getActivity(), MoviesProvider.MyMovies.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null);
-            } else {
-                if (load2.getCount() != 0 && favflag == 1) {
-                    return new CursorLoader(getActivity(), MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
-                            null,
-                            null,
-                            null,
-                            null);
-
-                }
-            }
-        }finally {
-          //  if(!load1.isClosed()||load1!=null)
-            //    load1.close();
-           // if(!load2.isClosed()||load2!=null)
-             //   load2.close();
-        }
-        return null;
-    }
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if(gridAdapter!=null) {
-            gridAdapter.swapCursor(cursor);
-        }
-        if (mPosition != GridView.INVALID_POSITION) {
-            // If we don't need to restart the loader, and there's a desired position to restore
-            // to, do so now.
-            recyclerView.smoothScrollToPosition(mPosition);
-        }
-
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        gridAdapter.swapCursor(null);
-    }
 
 
 

@@ -16,9 +16,37 @@ import java.util.ArrayList;
 
 public class MoviesUtil {
 
+Cursor c;
+    int count=0;
+    public Cursor allMoviesCursor(Context context){
+         c=null;
+        c=  context.getContentResolver().query(MoviesProvider.MyMovies.CONTENT_URI,
+                null, null, null, null);
+        return c;
 
-    public static int insertData(Context context, ArrayList<Movie> movies, String storeF) {
-        Cursor c = null;
+
+    }
+    public Cursor favoriteMoviesCursor(Context context){
+       c=null;
+
+        c=  context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+                null, null, null, null);
+    return  c;
+    }
+
+    public int getAllMoviesCount(Context context){
+        count=0;
+        count=allMoviesCursor(context).getCount();
+        return count;
+    }
+
+    public int getFavMoviesCount(Context context){
+        count=0;
+        count=favoriteMoviesCursor(context).getCount();
+        return count;
+    }
+    public int insertData(Context context, ArrayList<Movie> movies, String storeF) {
+         c = null;
         int flag = 0;
         ContentProviderOperation.Builder builder = null;
         try {
@@ -81,12 +109,15 @@ public class MoviesUtil {
         } catch (Exception e) {
             Log.e("POPULAR MOVIES", "Error applying batch insert", e);
 
-        } finally {
-            //  if (c != null||!c.isClosed()) {
-            //    c.close();
-            //}
-
         }
+             try
+                 {
+
+                     if (c != null || !c.isClosed()) {
+                         c.close();
+                     }
+                 }catch(Exception e){}
+
         if (flag == 0) {
             return 1;
         } else {

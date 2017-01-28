@@ -3,6 +3,7 @@ package com.udacity.project2.popularmovies.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
         //DatabaseUtils.dumpCursor(cursor);
         int viewType = getItemViewType(cursor.getPosition());
+        Log.d("vikas............","Cursor Value"+cursor.getCount());
         String posterPath = cursor.getString(cursor.getColumnIndex(ColumnsMovies.POSTER_PATH));
         String title = cursor.getString(cursor.getColumnIndex(ColumnsMovies.TITLE));
         viewHolder.imageView.setImageDrawable(null);
