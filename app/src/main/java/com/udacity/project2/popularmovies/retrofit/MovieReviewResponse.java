@@ -1,8 +1,7 @@
-package com.udacity.project2.popularmovies.retrofitusedinproject;
+package com.udacity.project2.popularmovies.retrofit;
 
 import com.google.gson.annotations.SerializedName;
 import com.udacity.project2.popularmovies.parcelable.MovieReview;
-import com.udacity.project2.popularmovies.parcelable.MovieTrailerResults;
 
 import java.util.List;
 
@@ -23,6 +22,7 @@ public class MovieReviewResponse {
     private int total_pages;
     @SerializedName("total_results")
     private int total_results;
+
     public int getPage() {
         return page;
     }

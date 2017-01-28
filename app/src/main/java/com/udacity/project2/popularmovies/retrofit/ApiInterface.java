@@ -1,8 +1,5 @@
-package com.udacity.project2.popularmovies.retrofitusedinproject;
+package com.udacity.project2.popularmovies.retrofit;
 
-import com.udacity.project2.popularmovies.retrofitusedinproject.MovieResponse;
-
-import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -22,8 +19,8 @@ public interface ApiInterface {
     Call<MovieResponse> getPopularMovies(@QueryMap Map<String, String> options);
 
     @GET("movie/{id}/videos")
-    Call<MovieTrailerResponse> getMovieTrailers(@Path("id") String id,@Query("api_key") String apiKey);
+    Call<MovieTrailerResponse> getMovieTrailers(@Path("id") String id, @Query("api_key") String apiKey);
 
     @GET("movie/{id}/reviews")
-    Call<MovieReviewResponse> getMovieReviews(@Path("id") String id,@Query("api_key") String apiKey);
+    Call<MovieReviewResponse> getMovieReviews(@Path("id") String id, @Query("api_key") String apiKey);
 }

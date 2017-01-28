@@ -35,10 +35,10 @@ import com.udacity.project2.popularmovies.network.Url;
 import com.udacity.project2.popularmovies.parcelable.Movie;
 import com.udacity.project2.popularmovies.parcelable.MovieReview;
 import com.udacity.project2.popularmovies.parcelable.MovieTrailerResults;
-import com.udacity.project2.popularmovies.retrofitusedinproject.ApiClient;
-import com.udacity.project2.popularmovies.retrofitusedinproject.ApiInterface;
-import com.udacity.project2.popularmovies.retrofitusedinproject.MovieReviewResponse;
-import com.udacity.project2.popularmovies.retrofitusedinproject.MovieTrailerResponse;
+import com.udacity.project2.popularmovies.retrofit.ApiClient;
+import com.udacity.project2.popularmovies.retrofit.ApiInterface;
+import com.udacity.project2.popularmovies.retrofit.MovieReviewResponse;
+import com.udacity.project2.popularmovies.retrofit.MovieTrailerResponse;
 
 import java.util.ArrayList;
 
@@ -50,7 +50,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
-import static com.udacity.project2.popularmovies.database.MoviesUtil.CacheDelete;
 import static com.udacity.project2.popularmovies.database.MoviesUtil.CheckisFavourite;
 import static com.udacity.project2.popularmovies.database.MoviesUtil.FavouriteDelete;
 
@@ -59,6 +58,7 @@ import static com.udacity.project2.popularmovies.database.MoviesUtil.FavouriteDe
  */
 
 public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdapter.ClickListener, View.OnClickListener {
+    private static final String MOVIE_SHARE_HASHTAG = " #MyMovies";
     @BindView(R.id.title)
     TextView title;
     @BindView(R.id.rdate)
@@ -73,17 +73,14 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     ProgressBar progressBar;
     @BindView(R.id.progressContent)
     LinearLayout progressContent;
-    private ShareActionProvider mShareActionProvider;
-    private static final String MOVIE_SHARE_HASHTAG = " #MyMovies";
     @BindView(R.id.contentMain)
     LinearLayout contentMain;
-    private Unbinder unbinder;
     @BindView(R.id.movieReview)
     RecyclerView movieReviewView;
     @BindView(R.id.movieTrailer)
     RecyclerView movieTrailerView;
-    @BindView(R.id.myFavourite)
-    ImageView myFavourite;
+    @BindView(R.id.myFavorite)
+    ImageView myFavorite;
     @BindView(R.id.error)
     LinearLayout errorLayout;
     @BindView(R.id.content)
@@ -95,14 +92,17 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     String mDate;
     String mOverview;
     String id;
+    View rootView;
+    int n = -1;
+    private ShareActionProvider mShareActionProvider;
+    private Unbinder unbinder;
     private ArrayList<MovieTrailerResults> movieTrailerResults;
     private ArrayList<MovieReview> movieReviewResults;
     private RecyclerViewReviewAdapter reviewAdapter;
     private RecyclerViewTrailerAdapter trailerAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private Intent intent;
-    View rootView;
-    int n=-1;
+
     public DetailsFragment() {
         setHasOptionsMenu(true);
     }
@@ -110,21 +110,19 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            //METHOD 1 Retrofit:-
         if (NetworkUtil.isNetworkConnected(getActivity())) {
-        //This is because internet connection goes down between activities
-
             if (savedInstanceState == null || !savedInstanceState.containsKey("trailers") ||
-                    savedInstanceState.getParcelableArrayList("trailers") == null||
+                    savedInstanceState.getParcelableArrayList("trailers") == null ||
                     !savedInstanceState.containsKey("reviews") ||
                     savedInstanceState.getParcelableArrayList("reviews") == null) {
-               getTrailers(id);
+                getTrailers(id);
 
-            } else{
+            } else {
                 movieTrailerResults = savedInstanceState.getParcelableArrayList("trailers");
                 movieReviewResults = savedInstanceState.getParcelableArrayList("reviews");
+
             }
-       }
+        }
 
     }
 
@@ -145,39 +143,26 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         contentMain.setVisibility(rootView.GONE);
         setLayoutManager(movieTrailerView);
         setLayoutManager(movieReviewView);
-        if(movieTrailerResults !=null && movieReviewResults !=null){
-            setData(movieTrailerResults,movieReviewResults);
-        }
+        if (movieTrailerResults != null && movieReviewResults != null) {
+            if(progressBar!=null){progressBar.setVisibility(View.GONE);}
+            setData(movieTrailerResults, movieReviewResults);
 
-        if (NetworkUtil.isNetworkConnected(getActivity())) {
-            //This is because internet connection goes down between activities
-            if (errorLayout != null || progressBar != null || contLayout != null) {
-                errorLayout.setVisibility(View.GONE);
-                contLayout.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-            }
         }else {
-                if (errorLayout != null || contLayout != null||progressBar!=null) {
-                    progressBar.setVisibility(View.GONE);
-                    errorLayout.setVisibility(View.VISIBLE);
-                    contLayout.setVisibility(View.GONE);
 
-                }
-            }
-
+            CheckNetworkDoStuffOnView();
+        }
         return rootView;
 
     }
 
-    void setLayoutManager(RecyclerView view){
+    void setLayoutManager(RecyclerView view) {
         view.setHasFixedSize(true);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         view.setLayoutManager(mLinearLayoutManager);
     }
-    // When binding a fragment in onCreateView, set the views to null in onDestroyView.
-    // ButterKnife returns an Unbinder on the initial binding that has an unbind method to do this automatically.
-    @Override
+
+   @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
@@ -191,51 +176,49 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
 
         super.onSaveInstanceState(outState);
     }
-    public void setData(ArrayList<MovieTrailerResults> movieTrailerResults,ArrayList<MovieReview> movieReviews) {
-        if (movieTrailerResults != null && movieReviews !=null) {
+
+    public void setData(ArrayList<MovieTrailerResults> movieTrailerResults, ArrayList<MovieReview> movieReviews) {
+        if (movieTrailerResults != null && movieReviews != null) {
             trailerAdapter = new RecyclerViewTrailerAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, movieTrailerResults);
             reviewAdapter = new RecyclerViewReviewAdapter(getActivity().getBaseContext(), R.layout.list_item_movie_trailer, movieReviews);
-            if (trailerAdapter != null && reviewAdapter != null)
-            {
+            if (trailerAdapter != null && reviewAdapter != null) {
                 trailerAdapter.setClickListener(this);
-            movieTrailerView.setAdapter(trailerAdapter);
-            movieReviewView.setAdapter(reviewAdapter);
-        }
-            mtitle=intent.getStringExtra("title");
-            title.setText("" +mtitle);
-            n=CheckisFavourite(getContext(),mtitle);
-            if(n==1){
-                n=0;
-                myFavourite.setImageResource(android.R.drawable.btn_star_big_on);
-
-            }else {
-                n=1;
-                myFavourite.setImageResource(android.R.drawable.btn_star_big_off);
+                movieTrailerView.setAdapter(trailerAdapter);
+                movieReviewView.setAdapter(reviewAdapter);
+            }
+            mtitle = intent.getStringExtra("title");
+            title.setText("" + mtitle);
+            n = CheckisFavourite(getContext(), mtitle);
+            if (n == 1) {
+                n = 0;
+                myFavorite.setImageResource(android.R.drawable.btn_star_big_on);
+            } else {
+                n = 1;
+                myFavorite.setImageResource(android.R.drawable.btn_star_big_off);
             }
             mPosterPath = intent.getStringExtra("poster");
             mPosterUrl = Url.POSTER_URL + mPosterPath;
             Glide.with(getContext()).load(mPosterUrl)
-                    .thumbnail( 0.1f )
+                    .thumbnail(0.1f)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .into(img);
-            mRating=intent.getDoubleExtra("vote", 0);
-            mDate=intent.getStringExtra("date");
-            mOverview=intent.getStringExtra("overview");
-            rate.setText("Rating: " + mRating+ "/10");
-            date.setText("Release Date: " +mDate);
-            overview.setText("Overview: " +mOverview );
+            mRating = intent.getDoubleExtra("vote", 0);
+            mDate = intent.getStringExtra("date");
+            mOverview = intent.getStringExtra("overview");
+            rate.setText("Rating: " + mRating + "/10");
+            date.setText("Release Date: " + mDate);
+            overview.setText("Overview: " + mOverview);
             contentMain.setVisibility(rootView.VISIBLE);
             progressBar.setVisibility(rootView.GONE);
-            myFavourite.setOnClickListener(this);
+            myFavorite.setOnClickListener(this);
         }
 
     }
 
 
-
+    //Retrofit getting Trailers
     public void getTrailers(final String id) {
         if (NetworkUtil.isNetworkConnected(getActivity())) {
-
             ApiInterface apiService =
                     ApiClient.getClient().create(ApiInterface.class);
 
@@ -260,7 +243,9 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
 
         }
     }
-    public void getReviews(String id, final ArrayList<MovieTrailerResults> movieTrailers){
+
+    //Retrofit getting Reviews
+    public void getReviews(String id, final ArrayList<MovieTrailerResults> movieTrailers) {
         if (NetworkUtil.isNetworkConnected(getActivity())) {
 
             ApiInterface apiService =
@@ -273,8 +258,8 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
             call.enqueue(new Callback<MovieReviewResponse>() {
                 @Override
                 public void onResponse(Call<MovieReviewResponse> call, Response<MovieReviewResponse> response) {
-                    movieReviewResults= (ArrayList<MovieReview>) response.body().getMovieReviews();
-                    setData(movieTrailers,movieReviewResults);
+                    movieReviewResults = (ArrayList<MovieReview>) response.body().getMovieReviews();
+                    setData(movieTrailers, movieReviewResults);
                 }
 
                 @Override
@@ -288,14 +273,14 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
 
     }
 
-
+    //on trailer click
     @Override
     public void itemClicked(View view, int position) {
-        Toast.makeText(getContext(),"Hello Check Internet Connection and Try again...",Toast.LENGTH_SHORT);
-        MovieTrailerResults movieTrailersClick=movieTrailerResults.get(position);
-        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" +movieTrailersClick.getKey()));
+        Toast.makeText(getContext(), "Hello Check Internet Connection and Try again...", Toast.LENGTH_SHORT);
+        MovieTrailerResults movieTrailersClick = movieTrailerResults.get(position);
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + movieTrailersClick.getKey()));
         Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://www.youtube.com/watch?v=" +movieTrailersClick.getKey()));
+                Uri.parse("http://www.youtube.com/watch?v=" + movieTrailersClick.getKey()));
         try {
             startActivity(appIntent);
         } catch (ActivityNotFoundException ex) {
@@ -303,51 +288,63 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_details, menu);
-        // Retrieve the share menu item
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-
-        // Get the provider and hold onto it to set/change the share intent.
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-
-        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
-        //if (intent!= null) {
-        mShareActionProvider.setShareIntent(createShareMovieIntent());
-        //}
-    }
-
-    private Intent createShareMovieIntent() {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, intent.getStringExtra("title")+MOVIE_SHARE_HASHTAG);
-        return shareIntent;
-    }
-
+    //on favorite click
     @Override
     public void onClick(View view) {
         if (n == 1) {
-            n=0;
+            n = 0;
             try {
                 Movie movie;
                 movie = new Movie(mPosterPath, false, mOverview, mDate, null, Integer.parseInt(id), null, null, mtitle, null, 0.0, 0, false, mRating);
 
                 ArrayList<Movie> m = new ArrayList<Movie>();
                 m.add(0, movie);
-                MoviesUtil moviesUtil=new MoviesUtil();
+                MoviesUtil moviesUtil = new MoviesUtil();
                 moviesUtil.insertData(getContext(), m, "favourite");
-                myFavourite.setImageResource(android.R.drawable.btn_star_big_on);
+                myFavorite.setImageResource(android.R.drawable.btn_star_big_on);
                 Toast.makeText(getContext(), "Movie Inserted in Favourite", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
             }
         } else {
-            n=1;
-            myFavourite.setImageResource(android.R.drawable.btn_star_big_off);
-            FavouriteDelete(getContext(),mtitle);
+            n = 1;
+            myFavorite.setImageResource(android.R.drawable.btn_star_big_off);
+            FavouriteDelete(getContext(), mtitle);
             Toast.makeText(getContext(), "Movie deleted from  favourite", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //Share Action Provider
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_details, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        mShareActionProvider.setShareIntent(createShareMovieIntent());
+    }
+
+    private Intent createShareMovieIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, intent.getStringExtra("title") + MOVIE_SHARE_HASHTAG);
+        return shareIntent;
+    }
+
+    private void CheckNetworkDoStuffOnView() {
+        if (NetworkUtil.isNetworkConnected(getActivity())) {
+            //This is because internet connection goes down between activities
+            if (errorLayout != null || progressBar != null || contLayout != null) {
+                errorLayout.setVisibility(View.GONE);
+                contLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (errorLayout != null || contLayout != null || progressBar != null) {
+                progressBar.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.VISIBLE);
+                contLayout.setVisibility(View.GONE);
+
+            }
         }
     }
 }

@@ -3,20 +3,14 @@ package com.udacity.project2.popularmovies.fragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.content.Loader;
 import android.widget.GridView;
 
-import com.udacity.project2.popularmovies.R;
 import com.udacity.project2.popularmovies.adapter.RecyclerViewAdapter;
 import com.udacity.project2.popularmovies.database.MoviesProvider;
-
-import butterknife.BindView;
 
 /**
  * Created by Dell on 1/28/2017.
@@ -25,28 +19,29 @@ import butterknife.BindView;
 public class MoviesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int MOVIE_LOADER = 0;
     private static final String SELECTED_KEY = "selected_position";
+    private static int favflag = -1;
     private Fragment mAttachedFragment;
     private RecyclerViewAdapter gridAdapter;
     private int mPosition = GridView.INVALID_POSITION;
-    private static int  favflag=-1;
 
 
     private MoviesLoader() {
     }
 
-    public static MoviesLoader newInstance(int flag,@NonNull Fragment fragment, @NonNull RecyclerViewAdapter adapter){
+    public static MoviesLoader newInstance(int flag, @NonNull Fragment fragment, @NonNull RecyclerViewAdapter adapter) {
         MoviesLoader element = new MoviesLoader();
         element.mAttachedFragment = fragment;
         element.gridAdapter = adapter;
-        element.favflag=flag;
+        element.favflag = flag;
         return element;
     }
-    public void initLoader(){
+
+    public void initLoader() {
         if (mAttachedFragment != null)
             mAttachedFragment.getLoaderManager().initLoader(MOVIE_LOADER, null, this);
     }
 
-    public void restartLoader(){
+    public void restartLoader() {
         if (mAttachedFragment != null)
             mAttachedFragment.getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
     }
@@ -76,18 +71,12 @@ public class MoviesLoader implements LoaderManager.LoaderCallbacks<Cursor> {
         }
         return null;
     }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if(gridAdapter!=null) {
+        if (gridAdapter != null) {
             gridAdapter.swapCursor(cursor);
         }
-        /*if (mPosition != GridView.INVALID_POSITION) {
-            // If we don't need to restart the loader, and there's a desired position to restore
-            // to, do so now.
-            recyclerView.smoothScrollToPosition(mPosition);
-        }*/
-
-
     }
 
     @Override

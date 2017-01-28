@@ -7,17 +7,14 @@
 
     <ImageView
         android:id="@+id/image"
-        android:adjustViewBounds="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        style="@style/textViewStyle"
+        android:adjustViewBounds="true" />
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/textViewStyle"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/overPadding"
-        android:textColor="@color/textColor"
         android:textSize="@dimen/textSizeMovie" />
 
 </LinearLayout>

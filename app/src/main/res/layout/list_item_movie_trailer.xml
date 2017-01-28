@@ -1,40 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
-      <View
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/viewHeight"
-      android:layout_marginTop="@dimen/viewTop"
-      android:background="@color/colorAccent" />
-     <LinearLayout   android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+    android:orientation="vertical">
+
+    <View style="@style/viewStyle" />
+
+    <LinearLayout
         style="@style/MovieTrailersItem"
-        >
-    <ImageView
-        android:id="@+id/trailerIcon"
-        android:src="@android:drawable/ic_media_play"
-        android:layout_width="@dimen/list_trailer_width"
-        android:layout_height="@dimen/list_trailer_height"
-        />
-
-    <TextView
-        android:id="@+id/trailerName"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/list_trialer_name_left"
-        android:textColor="@color/textColor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-     </LinearLayout>
-
-    <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/viewHeight"
-        android:layout_marginTop="@dimen/viewTop"
-        android:background="@color/colorAccent" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/trailerIcon"
+            android:layout_width="@dimen/list_trailer_width"
+            android:layout_height="@dimen/list_trailer_height"
+            android:src="@android:drawable/ic_media_play" />
+
+        <TextView
+            android:id="@+id/trailerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/list_trialer_name_left"
+            android:textColor="@color/textColor" />
+    </LinearLayout>
+
+    <View style="@style/viewStyle"/>
 </LinearLayout>

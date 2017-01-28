@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/listItemReviewAuthor"
-        android:textStyle="bold"
-        android:layout_marginTop="@dimen/viewTop"
-        android:padding="@dimen/overPadding"
+        style="@style/textStyle"
         android:background="@color/colorAccent"
-        android:textColor="@color/textColor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:padding="@dimen/overPadding"
+      />
 
     <TextView
         android:id="@+id/listItemReviewContent"
-        android:textColor="@color/textColor"
-        android:layout_marginTop="@dimen/viewTop"
-        android:padding="@dimen/overPadding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
+        android:layout_marginTop="@dimen/viewTop"
+        android:padding="@dimen/overPadding"
+        android:textColor="@color/textColor" />
 
 </LinearLayout>

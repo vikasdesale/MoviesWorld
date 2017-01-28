@@ -1,4 +1,4 @@
-package com.udacity.project2.popularmovies.retrofitusedinproject;
+package com.udacity.project2.popularmovies.retrofit;
 
 import com.google.gson.annotations.SerializedName;
 import com.udacity.project2.popularmovies.parcelable.Movie;
@@ -18,7 +18,6 @@ public class MovieResponse {
     private int totalResults;
     @SerializedName("total_pages")
     private int totalPages;
-
 
 
     public int getPage() {

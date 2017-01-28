@@ -1,4 +1,4 @@
-package com.udacity.project2.popularmovies.retrofitusedinproject;
+package com.udacity.project2.popularmovies.retrofit;
 
 import com.google.gson.annotations.SerializedName;
 import com.udacity.project2.popularmovies.parcelable.MovieTrailerResults;
@@ -15,7 +15,6 @@ public class MovieTrailerResponse {
     private int id;
     @SerializedName("results")
     private List<MovieTrailerResults> movieTrailerResults;
-
 
 
     public int getId() {

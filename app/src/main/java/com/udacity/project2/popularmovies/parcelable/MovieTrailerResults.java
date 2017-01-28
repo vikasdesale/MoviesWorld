@@ -4,31 +4,15 @@ package com.udacity.project2.popularmovies.parcelable;
  * Created by Dell on 1/25/2017.
  */
 
- import java.io.Serializable;
-        import android.os.Parcel;
-        import android.os.Parcelable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
- import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName;
 
-public class MovieTrailerResults implements Serializable, Parcelable
-{
+import java.io.Serializable;
 
-    @SerializedName("id")
-    private String id;
-    @SerializedName("iso_639_1")
-    private String iso6391;
-    @SerializedName("iso_3166_1")
-    private String iso31661;
-    @SerializedName("key")
-    private String key;
-    @SerializedName("name")
-    private String name;
-    @SerializedName("site")
-    private String site;
-    @SerializedName("size")
-    private Integer size;
-    @SerializedName("type")
-    private String type;
+public class MovieTrailerResults implements Serializable, Parcelable {
+
     public final static Parcelable.Creator<MovieTrailerResults> CREATOR = new Creator<MovieTrailerResults>() {
 
 
@@ -52,9 +36,24 @@ public class MovieTrailerResults implements Serializable, Parcelable
             return (new MovieTrailerResults[size]);
         }
 
-    }
-            ;
+    };
     private final static long serialVersionUID = 5334739784928957913L;
+    @SerializedName("id")
+    private String id;
+    @SerializedName("iso_639_1")
+    private String iso6391;
+    @SerializedName("iso_3166_1")
+    private String iso31661;
+    @SerializedName("key")
+    private String key;
+    @SerializedName("name")
+    private String name;
+    @SerializedName("site")
+    private String site;
+    @SerializedName("size")
+    private Integer size;
+    @SerializedName("type")
+    private String type;
 
     public String getId() {
         return id;
