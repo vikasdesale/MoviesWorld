@@ -34,6 +34,16 @@ Cursor c;
     return  c;
     }
 
+    public String[] getData(Cursor onClick){
+        String mId=onClick.getString(onClick.getColumnIndex(ColumnsMovies.KEY));
+
+        String mPosterPath= onClick.getString(onClick.getColumnIndex(ColumnsMovies.POSTER_PATH));
+        String mTitle=onClick.getString(onClick.getColumnIndex(ColumnsMovies.TITLE));
+        String mOverview=onClick.getString(onClick.getColumnIndex(ColumnsMovies.OVERVIEW));
+        String mDate = onClick.getString(onClick.getColumnIndex(ColumnsMovies.RELEASE_DATE));
+        Double mVoteAverage = onClick.getDouble(onClick.getColumnIndex(ColumnsMovies.VOTE_AVERAGE));
+        return  new String[]{mId, mPosterPath, mTitle, mOverview, mDate,String.valueOf(mVoteAverage)};
+    }
     public int getAllMoviesCount(Context context){
         count=0;
         count=allMoviesCursor(context).getCount();
@@ -147,22 +157,26 @@ Cursor c;
 
     }
 
-    public  int CheckisFavourite(Context context, String title) {
-       c = null;
+    public static int CheckisFavourite(Context context, String title) {
+        Cursor me = null;
         int flag = 0;
         try {
-            c = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+            me = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
                     null, ColumnsMovies.TITLE + "=?", new String[]{title}, null);
-                if (title.equals(c.getString(c.getColumnIndex(ColumnsMovies.TITLE)))) {
+                if (title.equals(me.getString(me.getColumnIndex(ColumnsMovies.TITLE)))) {
                     flag = 0;
                 } else {
                     flag = 1;
                 }
 
         } catch (Exception e) {
-        }
 
-        if (flag == 1 || c==null) {
+        } finally {
+            if (me != null) {
+               me.close();
+            }
+        }
+        if (flag == 1 || me.getCount()==0) {
             return 0;
         } else {
             return 1;

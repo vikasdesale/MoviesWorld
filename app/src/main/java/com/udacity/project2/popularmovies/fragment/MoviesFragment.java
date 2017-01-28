@@ -93,7 +93,7 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
          * DetailFragmentCallback for when an item has been selected.
          */
 
-       public void onItemSelected(String mId, String mPosterPath, String mTitle, String mOverview, String mDate, double mVoteAverage);
+       public void onItemSelected(String mId, String mPosterPath, String mTitle, String mOverview, String mDate, String mVoteAverage);
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -315,15 +315,9 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             }
             boolean cursor = onClick.moveToPosition(position);
             if (cursor) {
-                String mId=onClick.getString(onClick.getColumnIndex(ColumnsMovies.KEY));
-
-                String mPosterPath= onClick.getString(onClick.getColumnIndex(ColumnsMovies.POSTER_PATH));
-                String mTitle=onClick.getString(onClick.getColumnIndex(ColumnsMovies.TITLE));
-                String mOverview=onClick.getString(onClick.getColumnIndex(ColumnsMovies.OVERVIEW));
-                String mDate = onClick.getString(onClick.getColumnIndex(ColumnsMovies.RELEASE_DATE));
-                double mVoteAverage = onClick.getDouble(onClick.getColumnIndex(ColumnsMovies.VOTE_AVERAGE));
+                  String args[]=movies.getData(onClick);
                 ((CallbackDetails) getActivity())
-                        .onItemSelected(mId,mPosterPath,mTitle,mOverview,mDate,mVoteAverage);
+                        .onItemSelected(args[0],args[1],args[2],args[3],args[4],args[5]);
             }
         } catch (Exception e) {
         }/*finally {if (onClick != null || !onClick.isClosed()) {onClick.close();}    }*/

@@ -16,7 +16,7 @@
         android:name="com.udacity.project2.popularmovies.fragment.MoviesFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="4"
+        android:layout_weight="3"
         tools:layout="@android:layout/list_content" />
 
     <FrameLayout

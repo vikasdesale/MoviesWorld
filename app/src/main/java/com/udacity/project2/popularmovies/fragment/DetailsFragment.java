@@ -1,7 +1,6 @@
 package com.udacity.project2.popularmovies.fragment;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -57,6 +56,7 @@ import static com.udacity.project2.popularmovies.database.MoviesUtil.FavouriteDe
  */
 
 public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdapter.ClickListener, View.OnClickListener {
+    public static final String ID = "ID";
     private static final String MOVIE_SHARE_HASHTAG = " #MyMovies";
     @BindView(R.id.title)
     TextView title;
@@ -87,13 +87,14 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     String mtitle;
     String mPosterPath;
     String mPosterUrl;
-    double mRating;
+    String mRating;
     String mDate;
     String mOverview;
     String id;
     View rootView;
     MoviesUtil moviesUtil;
     int n = -1;
+    int i = 0;
     private ShareActionProvider mShareActionProvider;
     private Unbinder unbinder;
     private ArrayList<MovieTrailerResults> movieTrailerResults;
@@ -102,7 +103,6 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     private RecyclerViewTrailerAdapter trailerAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private Intent intent;
-    public static final String ID = "ID";
 
     public DetailsFragment() {
         setHasOptionsMenu(true);
@@ -111,6 +111,8 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initalizeInt();
+        setArgs();
         if (NetworkUtil.isNetworkConnected(getActivity())) {
             if (savedInstanceState == null || !savedInstanceState.containsKey("trailers") ||
                     savedInstanceState.getParcelableArrayList("trailers") == null ||
@@ -127,27 +129,10 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
 
     }
 
-    @Override
+    /*@Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        intent = getActivity().getIntent();
-        if (intent != null) {
-            id = intent.getStringExtra("id");
-            mRating = intent.getDoubleExtra("vote", 0);
-            mDate = intent.getStringExtra("date");
-            mOverview = intent.getStringExtra("overview");
-            mPosterPath = intent.getStringExtra("poster");
-        }
-        if(getArguments()!=null)
-        {
-            Bundle intent=getArguments();
-            id = intent.getString("id");
-            mRating = intent.getDouble("vote", 0);
-            mDate = intent.getString("date");
-            mOverview = intent.getString("overview");
-            mPosterPath = intent.getString("poster");
-        }
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -158,16 +143,45 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         setLayoutManager(movieTrailerView);
         setLayoutManager(movieReviewView);
         moviesUtil = new MoviesUtil();
+        Toast.makeText(getContext(), "Select movie for details", Toast.LENGTH_SHORT).show();
         if (movieTrailerResults != null && movieReviewResults != null) {
-            if(progressBar!=null){progressBar.setVisibility(View.GONE);}
+            if (progressBar != null) {
+                progressBar.setVisibility(View.GONE);
+            }
             setData(movieTrailerResults, movieReviewResults);
 
-        }else {
+        } else {
 
             CheckNetworkDoStuffOnView();
         }
         return rootView;
 
+    }
+
+    //this is on tablet call
+    private void setArgs() {
+        if (getArguments() != null) {
+            Bundle intent = getArguments();
+            id = intent.getString("id");
+            mtitle = intent.getString("title");
+            mRating = intent.getString("vote");
+            mDate = intent.getString("date");
+            mOverview = intent.getString("overview");
+            mPosterPath = intent.getString("poster");
+        }
+    }
+
+    //this is on direct call
+    private void initalizeInt() {
+        intent = getActivity().getIntent();
+        if (intent != null) {
+            id = intent.getStringExtra("id");
+            mtitle = intent.getStringExtra("title");
+            mRating = intent.getStringExtra("vote");
+            mDate = intent.getStringExtra("date");
+            mOverview = intent.getStringExtra("overview");
+            mPosterPath = intent.getStringExtra("poster");
+        }
     }
 
     void setLayoutManager(RecyclerView view) {
@@ -177,7 +191,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         view.setLayoutManager(mLinearLayoutManager);
     }
 
-   @Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
@@ -201,9 +215,8 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
                 movieTrailerView.setAdapter(trailerAdapter);
                 movieReviewView.setAdapter(reviewAdapter);
             }
-            mtitle = intent.getStringExtra("title");
             title.setText("" + mtitle);
-            n = moviesUtil.CheckisFavourite(getContext(), mtitle);
+            n = moviesUtil.CheckisFavourite(getActivity(), mtitle);
             if (n == 1) {
                 n = 0;
                 myFavorite.setImageResource(android.R.drawable.btn_star_big_on);
@@ -215,6 +228,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
             Glide.with(getContext()).load(mPosterUrl)
                     .thumbnail(0.1f)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .placeholder(R.drawable.placeholder)
                     .into(img);
             rate.setText("Rating: " + mRating + "/10");
             date.setText("Release Date: " + mDate);
@@ -230,6 +244,9 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     //Retrofit getting Trailers
     public void getTrailers(final String id) {
         if (NetworkUtil.isNetworkConnected(getActivity())) {
+            if (progressBar != null) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
             ApiInterface apiService =
                     ApiClient.getClient().create(ApiInterface.class);
 
@@ -306,11 +323,11 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
             n = 0;
             try {
                 Movie movie;
-                movie = new Movie(mPosterPath, false, mOverview, mDate, null, Integer.parseInt(id), null, null, mtitle, null, 0.0, 0, false, mRating);
+                movie = new Movie(mPosterPath, false, mOverview, mDate, null, Integer.parseInt(id), null, null, mtitle, null, 0.0, 0, false, Double.valueOf(mRating));
 
                 ArrayList<Movie> m = new ArrayList<Movie>();
                 m.add(0, movie);
-                moviesUtil.insertData(getContext(), m, "favourite");
+                moviesUtil.insertData(getActivity(), m, "favourite");
                 myFavorite.setImageResource(android.R.drawable.btn_star_big_on);
                 Toast.makeText(getContext(), "Movie Inserted in Favourite", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
@@ -318,8 +335,8 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         } else {
             n = 1;
             myFavorite.setImageResource(android.R.drawable.btn_star_big_off);
-            FavouriteDelete(getContext(), mtitle);
-            Toast.makeText(getContext(), "Movie deleted from  favourite", Toast.LENGTH_SHORT).show();
+            FavouriteDelete(getActivity(), mtitle);
+            Toast.makeText(getActivity(), "Movie deleted from  favourite", Toast.LENGTH_SHORT).show();
         }
     }
 
