@@ -27,11 +27,9 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.Ca
     private boolean mTwoPane;
     private String mLocation;
     private MoviesUtil moviesUtil;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Cursor c = null;
         setContentView(R.layout.activity_main);
         if (findViewById(R.id.container) != null) {
             // The detail container view will be present only in the large-screen layouts

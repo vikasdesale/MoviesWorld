@@ -112,7 +112,6 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initalizeInt();
-        setArgs();
         if (NetworkUtil.isNetworkConnected(getActivity())) {
             if (savedInstanceState == null || !savedInstanceState.containsKey("trailers") ||
                     savedInstanceState.getParcelableArrayList("trailers") == null ||
@@ -143,7 +142,6 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         setLayoutManager(movieTrailerView);
         setLayoutManager(movieReviewView);
         moviesUtil = new MoviesUtil();
-        Toast.makeText(getContext(), "Select movie for details", Toast.LENGTH_SHORT).show();
         if (movieTrailerResults != null && movieReviewResults != null) {
             if (progressBar != null) {
                 progressBar.setVisibility(View.GONE);
@@ -163,12 +161,17 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         if (getArguments() != null) {
             Bundle intent = getArguments();
             id = intent.getString("id");
-            mtitle = intent.getString("title");
-            mRating = intent.getString("vote");
-            mDate = intent.getString("date");
-            mOverview = intent.getString("overview");
-            mPosterPath = intent.getString("poster");
+            if(id==null) {
+               initalizeInt();
+            }else {
+                mtitle = intent.getString("title");
+                mRating = intent.getString("vote");
+                mDate = intent.getString("date");
+                mOverview = intent.getString("overview");
+                mPosterPath = intent.getString("poster");
+            }
         }
+
     }
 
     //this is on direct call
@@ -176,11 +179,15 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         intent = getActivity().getIntent();
         if (intent != null) {
             id = intent.getStringExtra("id");
-            mtitle = intent.getStringExtra("title");
-            mRating = intent.getStringExtra("vote");
-            mDate = intent.getStringExtra("date");
-            mOverview = intent.getStringExtra("overview");
-            mPosterPath = intent.getStringExtra("poster");
+            if (id == null) {
+                setArgs();
+            } else {
+                mtitle = intent.getStringExtra("title");
+                mRating = intent.getStringExtra("vote");
+                mDate = intent.getStringExtra("date");
+                mOverview = intent.getStringExtra("overview");
+                mPosterPath = intent.getStringExtra("poster");
+            }
         }
     }
 
@@ -228,7 +235,6 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
             Glide.with(getContext()).load(mPosterUrl)
                     .thumbnail(0.1f)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .placeholder(R.drawable.placeholder)
                     .into(img);
             rate.setText("Rating: " + mRating + "/10");
             date.setText("Release Date: " + mDate);
