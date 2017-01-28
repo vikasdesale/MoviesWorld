@@ -14,7 +14,6 @@ import com.udacity.project2.popularmovies.fragment.DetailsFragment;
  */
 public class DetailsActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +21,22 @@ public class DetailsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new DetailsFragment())
+                    .commit();
+        }
+
+
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailsFragment.ID, getIntent().getData());
+
+            DetailsFragment fragment = new DetailsFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, fragment)
                     .commit();
         }
     }

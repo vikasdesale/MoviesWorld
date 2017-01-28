@@ -11,6 +11,7 @@
         android:adjustViewBounds="true" />
 
     <TextView
+        android:fontFamily="sans-serif-condensed"
         android:id="@+id/text"
         style="@style/textViewStyle"
         android:layout_gravity="center"

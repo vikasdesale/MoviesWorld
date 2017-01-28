@@ -3,6 +3,7 @@ package com.udacity.project2.popularmovies.fragment;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -82,6 +83,18 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
     public MoviesFragment() {
     }
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface CallbackDetails {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+
+       public void onItemSelected(String mId, String mPosterPath, String mTitle, String mOverview, String mDate, double mVoteAverage);
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -302,14 +315,15 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             }
             boolean cursor = onClick.moveToPosition(position);
             if (cursor) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra("id", onClick.getString(onClick.getColumnIndex(ColumnsMovies.KEY)));
-                intent.putExtra("poster", onClick.getString(onClick.getColumnIndex(ColumnsMovies.POSTER_PATH)));
-                intent.putExtra("title", onClick.getString(onClick.getColumnIndex(ColumnsMovies.TITLE)));
-                intent.putExtra("overview", onClick.getString(onClick.getColumnIndex(ColumnsMovies.OVERVIEW)));
-                intent.putExtra("date", onClick.getString(onClick.getColumnIndex(ColumnsMovies.RELEASE_DATE)));
-                intent.putExtra("vote", onClick.getDouble(onClick.getColumnIndex(ColumnsMovies.VOTE_AVERAGE)));
-                startActivity(intent);
+                String mId=onClick.getString(onClick.getColumnIndex(ColumnsMovies.KEY));
+
+                String mPosterPath= onClick.getString(onClick.getColumnIndex(ColumnsMovies.POSTER_PATH));
+                String mTitle=onClick.getString(onClick.getColumnIndex(ColumnsMovies.TITLE));
+                String mOverview=onClick.getString(onClick.getColumnIndex(ColumnsMovies.OVERVIEW));
+                String mDate = onClick.getString(onClick.getColumnIndex(ColumnsMovies.RELEASE_DATE));
+                double mVoteAverage = onClick.getDouble(onClick.getColumnIndex(ColumnsMovies.VOTE_AVERAGE));
+                ((CallbackDetails) getActivity())
+                        .onItemSelected(mId,mPosterPath,mTitle,mOverview,mDate,mVoteAverage);
             }
         } catch (Exception e) {
         }/*finally {if (onClick != null || !onClick.isClosed()) {onClick.close();}    }*/
@@ -346,5 +360,9 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
 
         }
 
+    }
+
+    public void setUsePopularMoviesLayout(boolean usePopularMoviesLayout) {
+       // this.usePopularMoviesLayout = usePopularMoviesLayout;
     }
 }

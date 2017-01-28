@@ -147,26 +147,22 @@ Cursor c;
 
     }
 
-    public static int CheckisFavourite(Context context, String title) {
-        Cursor me = null;
+    public  int CheckisFavourite(Context context, String title) {
+       c = null;
         int flag = 0;
         try {
-            me = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
+            c = context.getContentResolver().query(MoviesProvider.FavouriteMovies.CONTENT_URI_FAVOURITE,
                     null, ColumnsMovies.TITLE + "=?", new String[]{title}, null);
-                if (title.equals(me.getString(me.getColumnIndex(ColumnsMovies.TITLE)))) {
+                if (title.equals(c.getString(c.getColumnIndex(ColumnsMovies.TITLE)))) {
                     flag = 0;
                 } else {
                     flag = 1;
                 }
 
         } catch (Exception e) {
-
-        } finally {
-            if (me != null || !me.isClosed()) {
-               me.close();
-            }
         }
-        if (flag == 1 || me.getCount() == 0) {
+
+        if (flag == 1 || c==null) {
             return 0;
         } else {
             return 1;
