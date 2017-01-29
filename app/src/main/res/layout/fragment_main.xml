@@ -40,7 +40,7 @@
             android:layout_weight="0.1"
             android:indeterminate="true" />
 
-        <com.udacity.project2.popularmovies.interfaces.ScrollViewExt
+        <com.udacity.project2.mymovies.interfaces.ScrollViewExt
             android:id="@+id/scroll"
             style="@style/MyLinearLayout"
             android:layout_weight="0.8">
@@ -49,7 +49,7 @@
                 android:id="@+id/card_recycler_view"
                 style="@style/MyLinearLayout" />
 
-        </com.udacity.project2.popularmovies.interfaces.ScrollViewExt>
+        </com.udacity.project2.mymovies.interfaces.ScrollViewExt>
 
         <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
             android:id="@+id/progressbar2"

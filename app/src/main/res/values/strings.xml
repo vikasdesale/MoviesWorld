@@ -13,10 +13,6 @@
 
 
 
-    <!-- preferences -->
-    <string name="sorting_order">Sorting order</string>
-    <string name="sorting_order_key">sorting_order</string>
-    <string name="preferred_sorting_order_default">popular</string>
 
     <!-- youtube links -->
     <string name="youtube_web_link">http://www.youtube.com/watch?v=</string>
