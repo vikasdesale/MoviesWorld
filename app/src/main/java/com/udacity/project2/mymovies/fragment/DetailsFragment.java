@@ -205,8 +205,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     }
 
 
-    //Share Action Provider
-    @Override
+/*    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
        // inflater.inflate(R.menu.menu_details, menu);
        // MenuItem menuItem = menu.findItem(R.id.action_share);
@@ -221,7 +220,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         shareIntent.putExtra(Intent.EXTRA_TEXT, intent.getStringExtra("title") + MOVIE_SHARE_HASHTAG);
         return shareIntent;
     }
-
+*/
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("trailers", movieTrailerResults);
