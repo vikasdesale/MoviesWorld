@@ -46,8 +46,8 @@ public class MainActivity extends ActionBarActivity implements MoviesFragment.Ca
             getSupportActionBar().setElevation(0f);
         }
 
-        MoviesFragment moviesFragment =  ((MoviesFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.fragment_main));
+        //MoviesFragment moviesFragment =  ((MoviesFragment) getSupportFragmentManager()
+          //      .findFragmentById(R.id.fragment_main));
 
     }
 

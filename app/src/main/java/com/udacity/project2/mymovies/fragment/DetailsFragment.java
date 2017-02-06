@@ -208,10 +208,10 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
     //Share Action Provider
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_details, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-        mShareActionProvider.setShareIntent(createShareMovieIntent());
+       // inflater.inflate(R.menu.menu_details, menu);
+       // MenuItem menuItem = menu.findItem(R.id.action_share);
+     //   mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+       // mShareActionProvider.setShareIntent(createShareMovieIntent());
     }
 
     private Intent createShareMovieIntent() {
