@@ -204,7 +204,7 @@ public class DetailsFragment extends Fragment implements RecyclerViewTrailerAdap
         unbinder.unbind();
     }
 
-    
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("trailers", movieTrailerResults);
