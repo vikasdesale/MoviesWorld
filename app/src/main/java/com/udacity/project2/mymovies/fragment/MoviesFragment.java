@@ -185,6 +185,11 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             pages = 1;
             settings(Url.SORT_BY_RATE_BASE_URL);
             return true;
+        }   if (id == R.id.action_upcoming) {
+            favflag = 0;
+            pages = 1;
+            settings(Url.SORT_UPCOMING_BASE_URL);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
