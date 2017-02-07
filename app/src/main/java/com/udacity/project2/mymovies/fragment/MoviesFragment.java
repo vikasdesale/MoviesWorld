@@ -259,8 +259,11 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
         Call<MovieResponse> call = null;
         if (type.equals(Url.SORT_BY_RATE_BASE_URL)) {
 
-            call = apiService.getTopRatedMovies(BuildConfig.THE_MOVIE_DB_API_KEY);
-        } else {
+            call = apiService.getTopRatedMovies(data);
+        } else if (type.equals(Url.SORT_UPCOMING_BASE_URL)) {
+            call = apiService.getUpcomingMovies(data);
+
+        }else{
             call = apiService.getPopularMovies(data);
 
         }

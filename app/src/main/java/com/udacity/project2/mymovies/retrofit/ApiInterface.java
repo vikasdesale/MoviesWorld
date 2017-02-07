@@ -13,14 +13,20 @@ import retrofit2.http.QueryMap;
  */
 public interface ApiInterface {
     @GET("movie/top_rated")
-    Call<MovieResponse> getTopRatedMovies(@Query("api_key") String apiKey);
+    Call<MovieResponse> getTopRatedMovies(@QueryMap Map<String, String> options);
 
     @GET("movie/popular")
     Call<MovieResponse> getPopularMovies(@QueryMap Map<String, String> options);
+
+    @GET("movie/upcoming")
+    Call<MovieResponse> getUpcomingMovies(@QueryMap Map<String, String> options);
 
     @GET("movie/{id}/videos")
     Call<MovieTrailerResponse> getMovieTrailers(@Path("id") String id, @Query("api_key") String apiKey);
 
     @GET("movie/{id}/reviews")
     Call<MovieReviewResponse> getMovieReviews(@Path("id") String id, @Query("api_key") String apiKey);
+
+
+
 }
