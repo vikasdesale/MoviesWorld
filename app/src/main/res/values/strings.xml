@@ -9,6 +9,8 @@
     <string name="trailers">Trailers:-</string>
     <string name="reviews">Reviews:-</string>
     <string name="action_favorite">Sort By Favorite</string>
+    <string name="action_upcoming">Sort By Upcoming</string>
+
     <string name="action_share">Share</string>
 
 

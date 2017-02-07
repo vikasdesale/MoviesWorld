@@ -17,5 +17,9 @@
         android:orderInCategory="100"
         android:title="@string/action_sort_high_rated"
         app:showAsAction="never" />
-
+    <item
+        android:id="@+id/action_upcoming"
+        android:orderInCategory="100"
+        android:title="@string/action_upcoming"
+        app:showAsAction="never" />
 </menu>
