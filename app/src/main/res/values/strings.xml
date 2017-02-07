@@ -19,4 +19,5 @@
     <!-- youtube links -->
     <string name="youtube_web_link">http://www.youtube.com/watch?v=</string>
     <string name="youtube_app_link">vnd.youtube:</string>
+    <string name="action_now_playing">Sort by Now Playing</string>
 </resources>
