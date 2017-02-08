@@ -21,6 +21,9 @@ public interface ApiInterface {
     @GET("movie/upcoming")
     Call<MovieResponse> getUpcomingMovies(@QueryMap Map<String, String> options);
 
+    @GET("movie/now_playing")
+    Call<MovieResponse> getNowPlayingMovies(@QueryMap Map<String, String> options);
+
     @GET("movie/{id}/videos")
     Call<MovieTrailerResponse> getMovieTrailers(@Path("id") String id, @Query("api_key") String apiKey);
 

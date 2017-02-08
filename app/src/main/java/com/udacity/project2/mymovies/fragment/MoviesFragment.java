@@ -269,7 +269,10 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
         } else if (type.equals(Url.SORT_UPCOMING_BASE_URL)) {
             call = apiService.getUpcomingMovies(data);
 
-        }else{
+        }else if (type.equals(Url.SORT_NOW_PLAYING_BASE_URL)) {
+            call = apiService.getUpcomingMovies(data);
+        }
+        else{
             call = apiService.getPopularMovies(data);
 
         }
