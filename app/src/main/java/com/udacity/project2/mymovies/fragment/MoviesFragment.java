@@ -191,6 +191,12 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             settings(Url.SORT_UPCOMING_BASE_URL);
             return true;
         }
+        if (id == R.id.action_now_playing) {
+            favflag = 0;
+            pages = 1;
+            settings(Url.SORT_NOW_PLAYING_BASE_URL);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
