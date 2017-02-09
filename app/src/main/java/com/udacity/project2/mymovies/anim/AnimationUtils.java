@@ -2,6 +2,7 @@ package com.udacity.project2.mymovies.anim;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.support.v7.widget.RecyclerView;
 import android.view.animation.DecelerateInterpolator;
 
@@ -10,12 +11,21 @@ import android.view.animation.DecelerateInterpolator;
  */
 public class AnimationUtils {
 
-    /**
-     * Courtesy: Vladimir Topalovic
-     *
-     * @param holder
-     * @param goesDown
-     */
+    public static void scaleXY(RecyclerView.ViewHolder holder) {
+        holder.itemView.setScaleX(0);
+        holder.itemView.setScaleY(0);
+
+        PropertyValuesHolder propx = PropertyValuesHolder.ofFloat("scaleX", 1);
+        PropertyValuesHolder propy = PropertyValuesHolder.ofFloat("scaleY", 1);
+
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(holder.itemView, propx, propy);
+
+
+        animator.setDuration(800);
+        animator.start();
+    }
+
+
     public static void animateSunblind(RecyclerView.ViewHolder holder, boolean goesDown) {
         int holderHeight = holder.itemView.getHeight();
         holder.itemView.setPivotY(goesDown == true ? 0 : holderHeight);
