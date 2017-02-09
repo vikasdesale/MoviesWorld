@@ -82,10 +82,10 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
             viewHolder.imageView.setImageResource(R.drawable.placeholder);
         }
         if (viewType > mPreviousPosition) {
-            AnimationUtils.scaleXY(viewHolder);
+            AnimationUtils.animate1(viewHolder,true);
 
         } else {
-            AnimationUtils.scaleXY(viewHolder);
+            AnimationUtils.animate1(viewHolder,true);
 
         }
         mPreviousPosition = viewType;

@@ -4,7 +4,9 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.support.v7.widget.RecyclerView;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 
 /**
  * Created by Dell on 12/22/2016.
@@ -23,6 +25,22 @@ public class AnimationUtils {
 
         animator.setDuration(800);
         animator.start();
+    }
+
+
+    public static void animate1(RecyclerView.ViewHolder holder, boolean goesDown) {
+        int holderHeight = holder.itemView.getHeight();
+        holder.itemView.setPivotY(goesDown == true ? 0 : holderHeight);
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator animatorTranslateY = ObjectAnimator.ofFloat(holder.itemView, "translationY", goesDown == true ? 300 : -300, 0);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(holder.itemView, "scaleY", 1f, 0.4f, 1f);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(holder.itemView, "scaleX", 1f, 1.3f, 1f);
+        animatorTranslateY.setInterpolator(new AccelerateInterpolator());
+        scaleY.setInterpolator(new OvershootInterpolator());
+        scaleX.setInterpolator(new OvershootInterpolator());
+        animatorSet.play(animatorTranslateY).before(scaleY).before(scaleX);
+        animatorSet.setDuration(700);
+        animatorSet.start();
     }
 
 
