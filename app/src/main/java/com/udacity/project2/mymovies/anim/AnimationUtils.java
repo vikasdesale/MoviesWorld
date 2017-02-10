@@ -56,6 +56,16 @@ public class AnimationUtils {
         animator.start();
     }
 
+    public static void scaleY(RecyclerView.ViewHolder holder) {
+        holder.itemView.setScaleY(0);
+
+        PropertyValuesHolder propy = PropertyValuesHolder.ofFloat("scaleY", 1);
+
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(holder.itemView, propy);
+
+        animator.setDuration(800);
+        animator.start();
+    }
     public static void animateSunblind(RecyclerView.ViewHolder holder, boolean goesDown) {
         int holderHeight = holder.itemView.getHeight();
         holder.itemView.setPivotY(goesDown == true ? 0 : holderHeight);

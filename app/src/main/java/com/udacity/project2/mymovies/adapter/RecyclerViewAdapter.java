@@ -85,7 +85,7 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
             AnimationUtils.scaleX(viewHolder);
 
         } else {
-            AnimationUtils.scaleX(viewHolder);
+            AnimationUtils.scaleY(viewHolder);
 
         }
         mPreviousPosition = viewType;
