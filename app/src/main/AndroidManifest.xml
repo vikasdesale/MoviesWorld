@@ -39,7 +39,11 @@
 
         <activity
             android:name=".activities.AboutUs"
-            android:label="@string/title_activity_about_us"></activity>
+            android:label="@string/title_activity_about_us"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.udacity.project2.mymovies.activities.MainActivity" /></activity>
     </application>
 
 </manifest>
