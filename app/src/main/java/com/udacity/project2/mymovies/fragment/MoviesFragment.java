@@ -1,6 +1,7 @@
 package com.udacity.project2.mymovies.fragment;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -195,6 +196,10 @@ public class MoviesFragment extends Fragment implements RecyclerViewAdapter.Clic
             favflag = 0;
             pages = 1;
             settings(Url.SORT_NOW_PLAYING_BASE_URL);
+            return true;
+        }  if (id == R.id.action_about_us) {
+            Intent i=new Intent("com.udacity.project2.mymovies.activities.AboutUs.class");
+            startActivity(i);
             return true;
         }
         return super.onOptionsItemSelected(item);
