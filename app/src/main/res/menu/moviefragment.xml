@@ -27,4 +27,10 @@
         android:orderInCategory="100"
         android:title="@string/action_now_playing"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_about_us"
+        android:orderInCategory="100"
+        android:title="@string/action_about_us"
+        app:showAsAction="never" />
 </menu>

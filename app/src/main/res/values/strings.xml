@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Movies</string>
+    <string name="app_name">Movies World</string>
     <string name="action_sort_most_pop">Sort By Most Popular</string>
     <string name="action_sort_high_rated">Sort By High Rated</string>
     <string name="title_activity_details">Movie Details</string>
@@ -13,11 +13,12 @@
 
     <string name="action_share">Share</string>
 
-
-
-
-    <!-- youtube links -->
-    <string name="youtube_web_link">http://www.youtube.com/watch?v=</string>
-    <string name="youtube_app_link">vnd.youtube:</string>
     <string name="action_now_playing">Sort by Now Playing</string>
+    <string name="action_about_us">About us</string>
+    <string name="title_activity_about_us">AboutUs</string>
+    <string name="developed">Developed By</string>
+
+    <string name="developedby" translatable="false">Vikas Desale</string>
+
+
 </resources>
