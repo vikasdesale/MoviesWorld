@@ -60,7 +60,6 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
         //DatabaseUtils.dumpCursor(cursor);
         int viewType = getItemViewType(cursor.getPosition());
-        Log.d("vikas............","Cursor Value"+cursor.getCount());
         String posterPath = cursor.getString(cursor.getColumnIndex(ColumnsMovies.POSTER_PATH));
         String title = cursor.getString(cursor.getColumnIndex(ColumnsMovies.TITLE));
         viewHolder.imageView.setImageDrawable(null);
@@ -82,10 +81,10 @@ public class RecyclerViewAdapter extends CursorRecyclerViewAdapter<RecyclerViewA
             viewHolder.imageView.setImageResource(R.drawable.placeholder);
         }
         if (viewType > mPreviousPosition) {
-            AnimationUtils.scaleX(viewHolder);
+            AnimationUtils.animate1(viewHolder,true);
 
         } else {
-            AnimationUtils.scaleY(viewHolder);
+            AnimationUtils.animate1(viewHolder,true);
 
         }
         mPreviousPosition = viewType;
