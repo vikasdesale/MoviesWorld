@@ -43,7 +43,9 @@
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.udacity.project2.mymovies.activities.MainActivity" /></activity>
+                android:value="com.udacity.project2.mymovies.activities.MainActivity" />
+        </activity>
+        <activity android:name=".activities.SplashScreen"></activity>
     </application>
 
 </manifest>
